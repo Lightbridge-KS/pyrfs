@@ -31,17 +31,20 @@ mkdocstrings `::: pyrfs.<name>` directives; new public API needs an entry in `do
 
 ## Commands
 
+Workflow is orchestrated by the **Makefile** — `make help` lists everything:
+
 ```sh
-uv sync                                  # core dev env
-uv run ruff check && uv run ruff format --check
-uv run mypy --strict pyrfs                # must stay clean
-uv run --extra pandas pytest             # full suite (pandas mode)
-uv sync --exact && uv run --no-sync pytest   # core mode (prunes pandas first!)
+make gate          # the full gate suite: lint, format-check, typecheck,
+                   # test (pandas), test-core, docs build, readme-check
+make test          # pytest with the pandas extra
+make test-core     # pytest without pandas (prunes the venv first)
+make docs-serve    # live-preview the docs site
+make readme        # re-render README.md from README.qmd
 ```
 
-Run **all of the above** before any commit. Caution: `uv run --extra pandas` leaves pandas
-in `.venv`; a plain `uv run pytest` afterwards is NOT a core-mode run — prune with
-`uv sync --exact` first.
+Run **`make gate`** before any commit. Caution: `uv run --extra pandas` leaves pandas in
+`.venv`; a plain `uv run pytest` afterwards is NOT a core-mode run — `make test-core`
+handles the pruning for you.
 
 ## Conventions
 

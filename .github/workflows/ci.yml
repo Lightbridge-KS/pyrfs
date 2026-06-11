@@ -12,10 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: uv sync
-      - run: uv run ruff check
-      - run: uv run ruff format --check
-      - run: uv run mypy --strict pyrfs
+      - run: make lint format-check typecheck
 
   docs:
     name: docs build
@@ -23,8 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: uv sync --group docs --extra pandas
-      - run: uv run --no-sync mkdocs build --strict
+      - run: make docs
+
+  readme:
+    name: readme up-to-date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: quarto-dev/quarto-actions/setup@v2
+      - run: make readme-check
 
   tests:
     name: pytest (py${{ matrix.python }}, ${{ matrix.extras }})
