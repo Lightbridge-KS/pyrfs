@@ -3,9 +3,15 @@
 Pythonic port of R's [`fs`](https://fs.r-lib.org) UX: tidy paths, typed values
 (`FsPath`/`Bytes`/`Perms`), chainable, pandas-friendly. Pure Python ≥ 3.10, stdlib-only core.
 
-**Design docs (read before structural changes):** `docs/pyrfs-ux.md` (API feel),
-`docs/pyrfs-architecture.md` (structure), `docs/PROGRESS.md` (master tracker — update its
-checkboxes when you complete tracked work).
+**Design docs (read before structural changes):** `docs/design/pyrfs-ux.md` (API feel),
+`docs/design/pyrfs-architecture.md` (structure), `docs/design/PROGRESS.md` (master tracker —
+update its checkboxes when you complete tracked work).
+
+**Docs site:** MkDocs Material (`mkdocs.yml`; content in `docs/`), deployed on Netlify
+(https://pyrfs.netlify.app). Build locally with
+`uv run --group docs --extra pandas mkdocs build --strict` — the tour notebook executes
+during the build (it is symlinked from `examples/` into `docs/tour/`). API pages use
+mkdocstrings `::: pyrfs.<name>` directives; new public API needs an entry in `docs/api/`.
 
 ## Architecture invariants
 

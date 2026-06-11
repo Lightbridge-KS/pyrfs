@@ -17,6 +17,15 @@ jobs:
       - run: uv run ruff format --check
       - run: uv run mypy --strict pyrfs
 
+  docs:
+    name: docs build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --group docs --extra pandas
+      - run: uv run --no-sync mkdocs build --strict
+
   tests:
     name: pytest (py${{ matrix.python }}, ${{ matrix.extras }})
     runs-on: ubuntu-latest

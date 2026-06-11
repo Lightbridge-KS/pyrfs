@@ -1,0 +1,105 @@
+site_name: pyrfs
+site_description: Pythonic filesystem ergonomics inspired by R's fs — tidy paths, typed values, chainable, pandas-friendly
+site_url: https://pyrfs.netlify.app/
+repo_url: https://github.com/Lightbridge-KS/pyrfs
+repo_name: Lightbridge-KS/pyrfs
+
+theme:
+  name: material
+  icon:
+    logo: material/folder-open-outline
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: deep orange
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+    - toc.follow
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_signature_annotations: true
+            separate_signature: true
+            show_source: false
+            show_root_heading: true
+            heading_level: 2
+            members_order: source
+  - mkdocs-jupyter:
+      include: ["tour/*.ipynb"]
+      execute: true
+      include_source: true
+  - llmstxt:
+      markdown_description: >-
+        pyrfs is a Python filesystem library porting the UX of R's fs package:
+        consistent noun_verb naming (path_*, file_*, dir_*, link_*), tidy paths,
+        typed self-describing values (FsPath, Bytes, Perms), explicit failure,
+        and three interchangeable surfaces — functional, fluent FsPath chaining,
+        and a pandas Series accessor with typed DataFrame columns.
+      full_output: llms-full.txt
+      sections:
+        Start here:
+          - index.md: Install and the three surfaces in one screen
+          - coming-from-r.md: R fs to pyrfs translation table and differences
+        Guides:
+          - guides/*.md
+        API reference:
+          - api/*.md
+        Design notes:
+          - design/pyrfs-ux.md: UX design document
+          - design/pyrfs-architecture.md: Architecture document
+
+nav:
+  - Home: index.md
+  - Coming from R's fs: coming-from-r.md
+  - Guides:
+      - The three surfaces: guides/three-surfaces.md
+      - Typed values: guides/typed-values.md
+      - Safety & errors: guides/safety-and-errors.md
+  - Tour (notebook): tour/pyrfs-tour.ipynb
+  - API:
+      - Path algebra: api/paths.md
+      - Files: api/files.md
+      - Directories: api/dirs.md
+      - Links: api/links.md
+      - Predicates & ids: api/predicates-ids.md
+      - FsPath: api/fspath.md
+      - Bytes & Perms: api/values.md
+      - Info, temp & errors: api/info-temp-errors.md
+  - Design:
+      - UX design: design/pyrfs-ux.md
+      - Architecture: design/pyrfs-architecture.md
+      - Progress tracker: design/PROGRESS.md

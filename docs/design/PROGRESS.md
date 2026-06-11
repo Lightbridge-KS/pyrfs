@@ -113,8 +113,10 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
 - [x] `display.py`: `LS_COLORS` colouriser for `FsPath.__repr__`; degrade on non-TTY/`NO_COLOR`
       (`NO_COLOR` > `FORCE_COLOR` > TTY detection; default palette when `LS_COLORS` unset)
 - [x] `dir_tree` colour (multicolumn path printing → parking lot)
-- [ ] README with quickstart; docstring pass (NumPy style) on all public API
-      — deferred: documentation approach to be discussed
+- [x] README with quickstart; docs site: **MkDocs Material + mkdocstrings (numpy) +
+      mkdocs-jupyter (executes the tour) + mkdocs-llmstxt (llms.txt / llms-full.txt)**,
+      deployed on **Netlify** (`netlify.toml`; site https://pyrfs.netlify.app)
+- [ ] docstring polish pass (NumPy style) on all public API — once rendered gaps are visible
 - [x] `examples/` notebook: the three surfaces + pandas pipe workflow
       (`examples/pyrfs-tour.ipynb`; code cells verified to run top-to-bottom)
 - [x] Build sdist+wheel (`uv build`); smoke-install in clean venv (core only, then `[pandas]`)

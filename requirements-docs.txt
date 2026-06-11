@@ -1,0 +1,6 @@
+# Docs build dependencies (Netlify + local; mirrors the uv "docs" group)
+mkdocs-material>=9.5
+mkdocstrings[python]>=0.27
+mkdocs-jupyter>=0.25
+mkdocs-llmstxt>=0.5
+ipykernel>=6.29

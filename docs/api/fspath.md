@@ -1,0 +1,3 @@
+# FsPath
+
+::: pyrfs.FsPath
