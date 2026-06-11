@@ -15,6 +15,7 @@ import subprocess
 import sys
 from collections.abc import Iterable
 
+from pyfs._engine.entry_types import type_from_mode
 from pyfs._engine.vectorize import PathInput, vectorized
 from pyfs.display import parse_perms
 from pyfs.errors import FsValueError
@@ -35,6 +36,13 @@ __all__ = [
     "file_size",
     "file_touch",
 ]
+
+_ACCESS_MODES = {
+    "exists": os.F_OK,
+    "read": os.R_OK,
+    "write": os.W_OK,
+    "execute": os.X_OK,
+}
 
 
 @vectorized
@@ -121,14 +129,6 @@ def file_exists(path: str) -> bool:
     return os.path.lexists(path)
 
 
-_ACCESS_MODES = {
-    "exists": os.F_OK,
-    "read": os.R_OK,
-    "write": os.W_OK,
-    "execute": os.X_OK,
-}
-
-
 @vectorized
 def file_access(path: str, mode: str = "exists") -> bool:
     """Test access: ``"exists"``, ``"read"``, ``"write"``, or ``"execute"``."""
@@ -192,17 +192,6 @@ def file_show(path: str) -> FsPath:
     return p
 
 
-_FILE_TYPES = [
-    (stat.S_ISLNK, "symlink"),
-    (stat.S_ISDIR, "directory"),
-    (stat.S_ISREG, "file"),
-    (stat.S_ISFIFO, "fifo"),
-    (stat.S_ISSOCK, "socket"),
-    (stat.S_ISCHR, "character_device"),
-    (stat.S_ISBLK, "block_device"),
-]
-
-
 def file_info(
     path: PathInput | Iterable[PathInput], *, follow: bool = False
 ) -> list[dict[str, object]]:
@@ -235,7 +224,7 @@ def _info_one(p: FsPath, *, follow: bool) -> dict[str, object]:
     st = os.stat(p) if follow else os.lstat(p)
     return {
         "path": p,
-        "type": _file_type(st.st_mode),
+        "type": type_from_mode(st.st_mode),
         "size": Bytes(st.st_size),
         "permissions": Perms(stat.S_IMODE(st.st_mode)),
         "modification_time": _ts(st.st_mtime),
@@ -247,13 +236,6 @@ def _info_one(p: FsPath, *, follow: bool) -> dict[str, object]:
         "inode": st.st_ino,
         "hard_links": st.st_nlink,
     }
-
-
-def _file_type(mode: int) -> str:
-    for check, name in _FILE_TYPES:
-        if check(mode):
-            return name
-    return "unknown"
 
 
 def _ts(epoch: float) -> datetime.datetime:

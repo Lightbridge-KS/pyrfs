@@ -44,6 +44,13 @@ __all__ = [
     "path_wd",
 ]
 
+# path_sanitize: characters/names unsafe in filenames across OSes
+_SANITIZE_CONTROL = re.compile(r"[\x00-\x1f\x80-\x9f]")
+_SANITIZE_ILLEGAL = re.compile(r'[/\\?<>:*|"]')
+_SANITIZE_WIN_TRAILING = re.compile(r"[. ]+$")
+_SANITIZE_RESERVED = re.compile(r"^\.+$")
+_SANITIZE_WIN_RESERVED = re.compile(r"^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$", re.IGNORECASE)
+
 
 def path(*parts: PathInput, ext: str = "") -> FsPath:
     """Construct a tidy path from parts, optionally adding an extension.
@@ -258,13 +265,6 @@ def path_has_parent(path: str, parent: PathInput) -> bool:
     child_parts = _abs_parts(path)
     parent_parts = _abs_parts(os.fspath(parent))
     return child_parts[: len(parent_parts)] == parent_parts
-
-
-_SANITIZE_CONTROL = re.compile(r"[\x00-\x1f\x80-\x9f]")
-_SANITIZE_ILLEGAL = re.compile(r'[/\\?<>:*|"]')
-_SANITIZE_WIN_TRAILING = re.compile(r"[. ]+$")
-_SANITIZE_RESERVED = re.compile(r"^\.+$")
-_SANITIZE_WIN_RESERVED = re.compile(r"^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$", re.IGNORECASE)
 
 
 @vectorized
