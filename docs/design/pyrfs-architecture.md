@@ -1,7 +1,7 @@
 # pyrfs — Architecture
 
 > A Pythonic port of R's [`fs`](https://fs.r-lib.org) · Status: **design draft** · Last updated: 2026-06-11
-> Companion: [`pyrfs-ux.md`](./pyrfs-ux.md) (user-facing design) · [`PROGRESS.md`](./PROGRESS.md) (build plan)
+> Companion: [`pyrfs-ux.md`](./pyrfs-ux.md) (user-facing design)
 
 ---
 

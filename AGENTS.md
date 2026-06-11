@@ -4,8 +4,7 @@ Pythonic port of R's [`fs`](https://fs.r-lib.org) UX: tidy paths, typed values
 (`FsPath`/`Bytes`/`Perms`), chainable, pandas-friendly. Pure Python ≥ 3.10, stdlib-only core.
 
 **Design docs (read before structural changes):** `docs/design/pyrfs-ux.md` (API feel),
-`docs/design/pyrfs-architecture.md` (structure), `docs/design/PROGRESS.md` (master tracker —
-update its checkboxes when you complete tracked work).
+`docs/design/pyrfs-architecture.md` (structure).
 
 **Docs site:** MkDocs Material (`mkdocs.yml`; content in `docs/`), deployed on Netlify
 (https://pyrfs.netlify.app). Build locally with

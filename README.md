@@ -37,12 +37,28 @@ pip install "pyrfs @ git+https://github.com/Lightbridge-KS/pyrfs"
 pip install "pyrfs[pandas] @ git+https://github.com/Lightbridge-KS/pyrfs"
 ```
 
-## Status
+## Features
 
-Core (paths, files, dirs, links, typed values, pandas layer) is implemented and
-tested on Python 3.10–3.13. See the
-[progress tracker](https://pyrfs.netlify.app/design/PROGRESS/) and
-[design docs](https://pyrfs.netlify.app/design/pyrfs-ux/).
+- **Consistent `noun_verb` API** in four families — `path_*` (pure string
+  algebra), `file_*`, `dir_*`, `link_*` — plus predicates and temp helpers.
+- **Three interchangeable surfaces**: functional, fluent `FsPath` chaining,
+  and a pandas `.fs` Series accessor — one engine underneath.
+- **Typed values that print for humans**: `Bytes(455200)` displays `444.5K`
+  and compares against `"1MB"`; `Perms("644")` displays `rw-r--r--`.
+- **Safe by default**: `overwrite=False`, bounded recursion, explicit
+  exceptions — nothing silently returns `False`, nothing clobbers unasked.
+- **pandas-native**: `dir_info()` returns a DataFrame with real
+  `bytes`/`perms`/`path` ExtensionDtypes; without pandas, the core works
+  unchanged.
+- Pure Python ≥ 3.10, zero hard dependencies, fully typed (`mypy --strict`),
+  tested on Python 3.10–3.13.
+
+Coming from R? Start with
+**[Coming from R's fs](https://pyrfs.netlify.app/coming-from-r/)**. The
+[design docs](https://pyrfs.netlify.app/design/pyrfs-ux/) describe the UX
+contract and architecture. The docs site also serves
+[llms.txt](https://pyrfs.netlify.app/llms.txt) /
+[llms-full.txt](https://pyrfs.netlify.app/llms-full.txt) for AI agents.
 
 ## License
 

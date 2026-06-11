@@ -1,7 +1,7 @@
 # pyrfs — UX Design
 
 > A Pythonic port of R's [`fs`](https://fs.r-lib.org) · Status: **design draft** · Last updated: 2026-06-11
-> Companion: [`pyrfs-architecture.md`](./pyrfs-architecture.md) (how it's built) · [`PROGRESS.md`](./PROGRESS.md)
+> Companion: [`pyrfs-architecture.md`](./pyrfs-architecture.md) (how it's built)
 
 This document defines the **feel** of pyrfs — names, return values, chaining, and the pandas
 workflow. The guiding goal: an ex-R user who knows `fs` should feel at home immediately, and a
