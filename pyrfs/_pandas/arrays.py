@@ -1,4 +1,4 @@
-"""ExtensionArrays backing the pyfs column dtypes.
+"""ExtensionArrays backing the pyrfs column dtypes.
 
 One small base class implements the pandas protocol; the three concrete
 arrays only define how to parse and box scalars. Operators come from
@@ -23,10 +23,10 @@ from pandas.api.extensions import (
 )
 from pandas.api.extensions import take as pd_take
 
-from pyfs._pandas.dtypes import BytesDtype, PathDtype, PermsDtype
-from pyfs.display import parse_bytes, parse_perms
-from pyfs.fspath import FsPath
-from pyfs.values import Bytes, Perms
+from pyrfs._pandas.dtypes import BytesDtype, PathDtype, PermsDtype
+from pyrfs.display import parse_bytes, parse_perms
+from pyrfs.fspath import FsPath
+from pyrfs.values import Bytes, Perms
 
 __all__ = ["BytesArray", "PathArray", "PermsArray"]
 

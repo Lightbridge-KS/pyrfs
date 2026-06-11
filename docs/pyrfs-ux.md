@@ -1,9 +1,9 @@
-# pyfs — UX Design
+# pyrfs — UX Design
 
 > A Pythonic port of R's [`fs`](https://fs.r-lib.org) · Status: **design draft** · Last updated: 2026-06-11
-> Companion: [`pyfs-architecture.md`](./pyfs-architecture.md) (how it's built) · [`PROGRESS.md`](./PROGRESS.md)
+> Companion: [`pyrfs-architecture.md`](./pyrfs-architecture.md) (how it's built) · [`PROGRESS.md`](./PROGRESS.md)
 
-This document defines the **feel** of pyfs — names, return values, chaining, and the pandas
+This document defines the **feel** of pyrfs — names, return values, chaining, and the pandas
 workflow. The guiding goal: an ex-R user who knows `fs` should feel at home immediately, and a
 Python user should find it idiomatic and pipeable.
 
@@ -17,7 +17,7 @@ Python user should find it idiomatic and pipeable.
 
 ```mermaid
 flowchart LR
-    in["path(s) in<br/>str · FsPath · list · Series"] --> op["pyfs operation"]
+    in["path(s) in<br/>str · FsPath · list · Series"] --> op["pyrfs operation"]
     op -->|success| out["typed result<br/>FsPath · Bytes · Perms · bool · DataFrame"]
     op -->|failure| err["raises (OSError / FsError)"]
     out -.->|chains into| op
@@ -54,10 +54,10 @@ a predictable matrix you learn once.
 ### Surface A — Functional (closest to R `fs`)
 
 ```python
-import pyfs as fs
+import pyrfs as fs
 
 fs.path("foo", "bar", "a", ext="txt")     # FsPath('foo/bar/a.txt')
-fs.dir_ls("pyfs", recurse=True, glob="*.py")
+fs.dir_ls("pyrfs", recurse=True, glob="*.py")
 fs.file_copy("a.txt", "b.txt")            # -> FsPath('b.txt')
 fs.path_ext_set("report.md", "html")      # FsPath('report.html')
 ```
@@ -65,7 +65,7 @@ fs.path_ext_set("report.md", "html")      # FsPath('report.html')
 ### Surface B — Fluent `FsPath` (Pythonic chaining)
 
 ```python
-from pyfs import FsPath
+from pyrfs import FsPath
 
 (FsPath("foo") / "bar" / "a.txt")         # FsPath('foo/bar/a.txt')   <- '/' operator
 (FsPath("data") / "raw.csv").with_ext("parquet").copy_to("clean/")
@@ -80,9 +80,9 @@ FsPath("logs").ls(glob="*.log")           # [FsPath, FsPath, ...]
 
 ```python
 import pandas as pd
-import pyfs as fs
+import pyrfs as fs
 
-df = pd.DataFrame({"path": fs.dir_ls("pyfs", recurse=True)})
+df = pd.DataFrame({"path": fs.dir_ls("pyrfs", recurse=True)})
 
 df.assign(
     ext = df["path"].fs.ext(),            # vectorized over the column
@@ -93,7 +93,7 @@ df.assign(
 
 ```mermaid
 flowchart TD
-    eng["pyfs engine (one implementation)"]
+    eng["pyrfs engine (one implementation)"]
     eng --> A["A. functional<br/>fs.file_copy()"]
     eng --> B["B. fluent<br/>FsPath().copy_to()"]
     eng --> C["C. pandas<br/>Series.fs.* / dir_info()"]
@@ -133,14 +133,14 @@ FsPath(fs.file_temp()).mkdir().touch_file("a").touch_file("b")
 
 The heart of `fs`'s charm — values that *know what they are* and print accordingly.
 
-| You have | pyfs shows | And you can write |
+| You have | pyrfs shows | And you can write |
 |----------|-----------|-------------------|
 | `455200` bytes | `445.2K` | `fs.file_size("x") > "10KB"` → `True` |
 | mode `0o644` | `rw-r--r--` | `perms == "u=rw,go=r"` → `True` |
 | `"src//a.txt"` | `src/a.txt` (tidy, coloured) | `FsPath("src") / "a.txt"` |
 
 ```python
-from pyfs import Bytes, Perms
+from pyrfs import Bytes, Perms
 
 Bytes("10MB")              # Bytes(10485760)  -> displays '10M'
 Bytes(455200) < "1MB"      # True
@@ -155,12 +155,12 @@ In pandas these become **real column dtypes** (ExtensionArrays), so the R headli
 almost verbatim:
 
 ```python
-(fs.dir_info("pyfs", recurse=False)
+(fs.dir_info("pyrfs", recurse=False)
    .query("size > '10KB' and type == 'file'")     # Bytes column compares to a string
    .sort_values("size", ascending=False)
    .loc[:, ["path", "permissions", "size", "modification_time"]])
 #                  path  permissions    size      modification_time
-#   pyfs/_engine/dirops.py  rw-r--r--   12.4K  2026-06-11 13:35:54
+#   pyrfs/_engine/dirops.py  rw-r--r--   12.4K  2026-06-11 13:35:54
 #   ...
 ```
 
@@ -168,14 +168,14 @@ almost verbatim:
 
 ## 6. The pandas pipe workflow (a first-class use case)
 
-pyfs is built to flow inside `.pipe()` chains because `*_info` returns a DataFrame and the `.fs`
+pyrfs is built to flow inside `.pipe()` chains because `*_info` returns a DataFrame and the `.fs`
 accessor vectorizes path algebra over columns.
 
 ```python
-import pyfs as fs
+import pyrfs as fs
 
 big_modules = (
-    fs.dir_info("pyfs", recurse=True)
+    fs.dir_info("pyrfs", recurse=True)
       .query("type == 'file'")
       .assign(stem=lambda d: d["path"].fs.name())
       .pipe(lambda d: d[d["path"].fs.ext() == "py"])
@@ -218,14 +218,14 @@ frame = pd.concat(
 
 ## 8. Explicit failure (Pythonic)
 
-pyfs raises rather than silently returning a falsy value:
+pyrfs raises rather than silently returning a falsy value:
 
 ```python
 fs.file_copy("a.txt", "b.txt")            # raises FileExistsError if b.txt exists
 fs.file_copy("a.txt", "b.txt", overwrite=True)   # ok
 
 fs.dir_ls("nope")                         # raises FileNotFoundError
-fs.path_filter(paths, glob="*.py", regexp=r"\.py$")   # raises pyfs.FsError: cannot set both
+fs.path_filter(paths, glob="*.py", regexp=r"\.py$")   # raises pyrfs.FsError: cannot set both
 
 # soften a traversal when some entries are unreadable:
 fs.dir_ls("/var", recurse=True, fail=False)   # warns + skips, returns what it could read
@@ -233,13 +233,13 @@ fs.dir_ls("/var", recurse=True, fail=False)   # warns + skips, returns what it c
 
 - Native `OSError` subclasses (`FileNotFoundError`, `FileExistsError`, `PermissionError`) for
   OS-level failures — familiar, `try/except`-able.
-- `pyfs.FsError` (with subclasses) for pyfs validation — friendly, actionable messages.
+- `pyrfs.FsError` (with subclasses) for pyrfs validation — friendly, actionable messages.
 
 ---
 
-## 9. R `fs` → pyfs translation
+## 9. R `fs` → pyrfs translation
 
-| R `fs` | pyfs functional | pyfs fluent |
+| R `fs` | pyrfs functional | pyrfs fluent |
 |--------|-----------------|-------------|
 | `path("a", "b", ext = "txt")` | `path("a", "b", ext="txt")` | `FsPath("a") / "b"` then `.with_ext("txt")` |
 | `dir_ls("d", recurse = TRUE)` | `dir_ls("d", recurse=True)` | `FsPath("d").ls(recurse=True)` |
@@ -289,7 +289,7 @@ NOUN_VERB(path, ...)              families: path_ file_ dir_ link_   (+ is_*, *_
   ├─ path(s) in                  str · FsPath · list · pandas.Series  (vectorized)
   ├─ tidy FsPath out             always '/', no '//' or trailing '/', UTF-8
   ├─ typed result                FsPath · Bytes('445.2K') · Perms('rwxr-xr-x') · DataFrame
-  └─ raises on failure           OSError subclasses · pyfs.FsError ; fail=False to soften
+  └─ raises on failure           OSError subclasses · pyrfs.FsError ; fail=False to soften
 
 three surfaces:  fs.file_copy(a,b)  ·  FsPath(a).copy_to(b)  ·  df['p'].fs.ext()
 pandas pipe:     dir_info(d).query("size > '10KB'").sort_values('size')

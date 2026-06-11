@@ -4,7 +4,7 @@ import pathlib
 
 import pytest
 
-from pyfs._engine.vectorize import vectorized
+from pyrfs._engine.vectorize import vectorized
 
 
 @vectorized

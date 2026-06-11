@@ -13,7 +13,7 @@ import re
 import stat
 import sys
 
-from pyfs.errors import FsValueError
+from pyrfs.errors import FsValueError
 
 __all__ = [
     "colour_enabled",
@@ -205,7 +205,7 @@ _MODE_TO_LS_KEY = (
 
 
 def colour_enabled() -> bool:
-    """Whether pyfs should emit ANSI colours.
+    """Whether pyrfs should emit ANSI colours.
 
     ``NO_COLOR`` (any value) disables; otherwise ``FORCE_COLOR`` (non-empty)
     enables; otherwise colours are used only on a TTY with ``TERM != dumb``.

@@ -5,8 +5,8 @@ import pathlib
 
 import pytest
 
-import pyfs as fs
-from pyfs import FsPath, FsValueError
+import pyrfs as fs
+from pyrfs import FsPath, FsValueError
 
 
 @pytest.fixture
@@ -127,7 +127,7 @@ class TestWalkMapInfo:
 
     def test_info_rows(self, base: FsPath) -> None:
         # engine rows; the public fs.dir_info upgrades to a DataFrame with pandas
-        from pyfs._engine.dirops import dir_info as engine_dir_info
+        from pyrfs._engine.dirops import dir_info as engine_dir_info
 
         rows = engine_dir_info(base, recurse=True, type="file")
         assert all(r["type"] == "file" for r in rows)

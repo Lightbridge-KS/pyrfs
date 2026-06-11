@@ -1,8 +1,8 @@
-"""pyfs error hierarchy for validation failures.
+"""pyrfs error hierarchy for validation failures.
 
 OS-level failures raise native :class:`OSError` subclasses
 (``FileNotFoundError``, ``FileExistsError``, ``PermissionError``).
-``FsError`` and friends cover pyfs-level argument validation that has no
+``FsError`` and friends cover pyrfs-level argument validation that has no
 native equivalent.
 """
 
@@ -12,7 +12,7 @@ __all__ = ["FsError", "FsValueError"]
 
 
 class FsError(Exception):
-    """Base class for all pyfs validation errors."""
+    """Base class for all pyrfs validation errors."""
 
 
 class FsValueError(FsError, ValueError):

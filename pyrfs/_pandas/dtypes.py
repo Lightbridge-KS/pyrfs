@@ -1,4 +1,4 @@
-"""ExtensionDtypes for the pyfs typed scalars.
+"""ExtensionDtypes for the pyrfs typed scalars.
 
 Registered names: ``"bytes"``, ``"perms"``, ``"path"`` — so columns can be
 built with ``series.astype("bytes")`` etc.
@@ -10,8 +10,8 @@ import builtins
 
 from pandas.api.extensions import ExtensionDtype, register_extension_dtype
 
-from pyfs.fspath import FsPath
-from pyfs.values import Bytes, Perms
+from pyrfs.fspath import FsPath
+from pyrfs.values import Bytes, Perms
 
 __all__ = ["BytesDtype", "PathDtype", "PermsDtype"]
 
@@ -25,7 +25,7 @@ class BytesDtype(ExtensionDtype):
 
     @classmethod
     def construct_array_type(cls) -> builtins.type:  # `type` attr shadows the builtin
-        from pyfs._pandas.arrays import BytesArray
+        from pyrfs._pandas.arrays import BytesArray
 
         return BytesArray
 
@@ -39,7 +39,7 @@ class PermsDtype(ExtensionDtype):
 
     @classmethod
     def construct_array_type(cls) -> builtins.type:  # `type` attr shadows the builtin
-        from pyfs._pandas.arrays import PermsArray
+        from pyrfs._pandas.arrays import PermsArray
 
         return PermsArray
 
@@ -53,6 +53,6 @@ class PathDtype(ExtensionDtype):
 
     @classmethod
     def construct_array_type(cls) -> builtins.type:  # `type` attr shadows the builtin
-        from pyfs._pandas.arrays import PathArray
+        from pyrfs._pandas.arrays import PathArray
 
         return PathArray

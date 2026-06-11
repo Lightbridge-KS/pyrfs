@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import os
 
-from pyfs._engine.entry_types import type_from_mode
-from pyfs._engine.vectorize import vectorized
+from pyrfs._engine.entry_types import type_from_mode
+from pyrfs._engine.vectorize import vectorized
 
 __all__ = [
     "is_absolute_path",

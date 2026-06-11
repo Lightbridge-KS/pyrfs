@@ -3,7 +3,7 @@
 R's fs is vectorized end to end; Python is scalar-by-default. The
 ``@vectorized`` decorator bridges the gap: a function written for a single
 path transparently accepts a list/tuple/set (returning a ``list``) or a
-pandas ``Series`` (returning a ``Series``) — without pyfs ever importing
+pandas ``Series`` (returning a ``Series``) — without pyrfs ever importing
 pandas (the Series branch only activates when pandas is already loaded).
 """
 
@@ -21,7 +21,7 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 PathInput = str | os.PathLike[str]
-"""A single path-like input accepted everywhere pyfs takes a path."""
+"""A single path-like input accepted everywhere pyrfs takes a path."""
 
 
 class _SeriesLike(Protocol):

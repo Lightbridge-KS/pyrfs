@@ -1,5 +1,5 @@
 [project]
-name = "pyfs"
+name = "pyrfs"
 version = "0.1.0"
 description = "Pythonic filesystem ergonomics inspired by R's fs — tidy paths, typed values, chainable, pandas-friendly"
 readme = "README.md"
@@ -28,7 +28,7 @@ classifiers = [
 pandas = ["pandas>=2.0"]
 
 [project.urls]
-Repository = "https://github.com/Lightbridge-KS/pyfs"
+Repository = "https://github.com/Lightbridge-KS/pyrfs"
 
 [dependency-groups]
 dev = [
@@ -43,10 +43,10 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["pyfs*"]
+include = ["pyrfs*"]
 
 [tool.setuptools.package-data]
-pyfs = ["py.typed"]
+pyrfs = ["py.typed"]
 
 [tool.ruff]
 line-length = 99
@@ -67,7 +67,7 @@ select = [
 [tool.mypy]
 strict = true
 python_version = "3.10"
-files = ["pyfs"]
+files = ["pyrfs"]
 
 # pandas/numpy are optional and (partially) untyped: treat them as opaque so
 # `mypy --strict` gives the same result whether or not the extra is installed.
@@ -79,7 +79,7 @@ ignore_missing_imports = true
 # The optional layer subclasses pandas classes (Any under the policy above);
 # the core package stays fully strict.
 [[tool.mypy.overrides]]
-module = ["pyfs._pandas.*"]
+module = ["pyrfs._pandas.*"]
 disallow_subclassing_any = false
 warn_return_any = false
 disallow_any_generics = false

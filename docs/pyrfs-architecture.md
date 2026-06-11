@@ -1,7 +1,7 @@
-# pyfs — Architecture
+# pyrfs — Architecture
 
 > A Pythonic port of R's [`fs`](https://fs.r-lib.org) · Status: **design draft** · Last updated: 2026-06-11
-> Companion: [`pyfs-ux.md`](./pyfs-ux.md) (user-facing design) · [`PROGRESS.md`](./PROGRESS.md) (build plan)
+> Companion: [`pyrfs-ux.md`](./pyrfs-ux.md) (user-facing design) · [`PROGRESS.md`](./PROGRESS.md) (build plan)
 
 ---
 
@@ -12,13 +12,13 @@ consistent `noun_verb` naming families, tidy paths, predictable path-carrying re
 explicit failure, and **typed self-describing values** (human-readable sizes, `rwxr-xr-x`
 permissions) — while being **chainable/pipeable** and integrating natively with **pandas**.
 
-**What pyfs is.** A thin, ergonomic, fully-typed wrapper over the Python standard library
+**What pyrfs is.** A thin, ergonomic, fully-typed wrapper over the Python standard library
 (`pathlib`, `shutil`, `os`, `stat`, `pwd`/`grp`) plus an optional pandas integration layer.
 
 **Non-goals.**
 - *Not* a new filesystem abstraction over remote/cloud backends (that's `fsspec`/`PyFilesystem2`).
 - *Not* a C/native extension. R's `fs` needed **libuv** for cross-platform syscalls; Python's
-  stdlib already abstracts that, so **pyfs is pure Python** — no build step, trivial install.
+  stdlib already abstracts that, so **pyrfs is pure Python** — no build step, trivial install.
 - *Not* a 1:1 transliteration. We keep `fs`'s *UX contract*, expressed in idiomatic Python.
 
 ---
@@ -36,7 +36,7 @@ flowchart TD
         acc["pandas .fs accessor<br/>df['path'].fs.ext()<br/>dir_info(p) -> DataFrame"]
     end
 
-    eng["pyfs._engine<br/>(pure stdlib, no pandas)<br/>paths · fileops · dirops · linkops · ids · temp"]
+    eng["pyrfs._engine<br/>(pure stdlib, no pandas)<br/>paths · fileops · dirops · linkops · ids · temp"]
 
     std[("Python stdlib<br/>pathlib · shutil · os · stat · pwd/grp")]
 
@@ -47,7 +47,7 @@ flowchart TD
 ```
 
 **Why this matters:** `fs` itself uses this idea — high-level R verbs compose from a small set of
-C primitives. pyfs applies it in pure Python: the fluent object and the pandas accessor are
+C primitives. pyrfs applies it in pure Python: the fluent object and the pandas accessor are
 *presentation layers*, and correctness lives in one place.
 
 ---
@@ -58,7 +58,7 @@ C primitives. pyfs applies it in pure Python: the fluent object and the pandas a
 flowchart LR
     user([Python user / data scientist])
 
-    subgraph pyfs["pyfs"]
+    subgraph pyrfs["pyrfs"]
         core["core API + FsPath + typed values"]
         pdx["optional pandas layer"]
     end
@@ -66,13 +66,13 @@ flowchart LR
     pandas{{"pandas (optional extra)"}}
     std[("OS filesystem via stdlib")]
 
-    user -->|"file_*/dir_*/path_* · FsPath · Series.fs"| pyfs
+    user -->|"file_*/dir_*/path_* · FsPath · Series.fs"| pyrfs
     core --> std
     core -.->|"lazily, if installed"| pdx
     pdx --> pandas
 ```
 
-- **Inbound:** scripts, notebooks, and packages call pyfs.
+- **Inbound:** scripts, notebooks, and packages call pyrfs.
 - **Hard dependency:** none beyond the standard library (Python ≥ 3.10).
 - **Optional:** pandas — enables `*_info` DataFrames, the `.fs` Series accessor, and the
   ExtensionDtypes. Absent pandas, the core still works and `*_info` returns `list[dict]`.
@@ -81,13 +81,13 @@ flowchart LR
 
 ## 4. Package layout (flat layout)
 
-The importable package sits at the **top level** (`pyfs/pyfs/`), not under `src/`.
+The importable package sits at the **top level** (`pyrfs/pyrfs/`), not under `src/`.
 
 ```
-pyfs/                         # repo root
+pyrfs/                         # repo root
 ├── pyproject.toml            # setuptools backend, [project], optional-deps, tooling
 ├── docs/                     # these design docs
-├── pyfs/                     # the importable package
+├── pyrfs/                     # the importable package
 │   ├── __init__.py           # PUBLIC re-exports (functions + FsPath/Bytes/Perms + FsError)
 │   ├── py.typed              # PEP 561 marker (ships type info)
 │   ├── errors.py             # FsError hierarchy (validation)
@@ -188,7 +188,7 @@ Methods return `FsPath` (or lists thereof) so calls chain: `(FsPath("a") / "b").
   ExtensionDtypes, so the R headline demo translates directly:
 
   ```python
-  (dir_info("pyfs", recurse=False)
+  (dir_info("pyrfs", recurse=False)
        .query("size > '10KB' and type == 'file'")
        .sort_values("size", ascending=False))
   ```
@@ -255,7 +255,7 @@ duplicated formatting logic.
 
 ## 7. Vectorization model
 
-R's `fs` is vectorized end to end. Python is scalar-by-default; pyfs bridges this with a small
+R's `fs` is vectorized end to end. Python is scalar-by-default; pyrfs bridges this with a small
 `@vectorized` decorator in `_engine/vectorize.py`:
 
 ```
@@ -283,12 +283,12 @@ flowchart LR
 ## 8. Error model
 
 `fs`'s promise is **explicit failure** (throw, never a silent `FALSE`). Python's stdlib already
-honors this — `os`/`shutil`/`pathlib` raise `OSError` subclasses. pyfs's policy:
+honors this — `os`/`shutil`/`pathlib` raise `OSError` subclasses. pyrfs's policy:
 
 - **Reuse native exceptions** where they fit: `FileNotFoundError`, `FileExistsError`,
   `PermissionError` (all `OSError`). `overwrite=False` on an existing target → `FileExistsError`
   (matches `fs`).
-- **Add `pyfs.FsError(Exception)`** for pyfs-level validation that has no native equivalent —
+- **Add `pyrfs.FsError(Exception)`** for pyrfs-level validation that has no native equivalent —
   e.g. `glob` and `regexp` both set, recycling length mismatch, bad permission/size literal.
   Subclasses (`FsValueError`, …) let callers `except` precisely, mirroring `fs`'s classed
   `fs_error`/`invalid_argument`.
@@ -297,9 +297,9 @@ honors this — `os`/`shutil`/`pathlib` raise `OSError` subclasses. pyfs's polic
 
 ```mermaid
 flowchart TD
-    op["pyfs operation"] --> k{failure?}
+    op["pyrfs operation"] --> k{failure?}
     k -->|"OS-level"| oserr["raise FileNotFoundError /<br/>FileExistsError / PermissionError"]
-    k -->|"bad argument"| fserr["raise pyfs.FsError subclass"]
+    k -->|"bad argument"| fserr["raise pyrfs.FsError subclass"]
     k -->|"traversal entry, fail=False"| warn["warnings.warn(), skip entry"]
     k -->|none| ok["return typed value (FsPath/Bytes/bool/DataFrame)"]
 ```
@@ -308,10 +308,10 @@ flowchart TD
 
 ## 9. Optional-dependency strategy
 
-pandas is an **extra** (`pip install pyfs[pandas]`). The mechanism:
+pandas is an **extra** (`pip install pyrfs[pandas]`). The mechanism:
 
 - `_engine` and `values`/`display` never import pandas → core is import-safe without it.
-- `pyfs/__init__.py` attempts `import pyfs._pandas` inside a `try/except ImportError`; success
+- `pyrfs/__init__.py` attempts `import pyrfs._pandas` inside a `try/except ImportError`; success
   registers the `.fs` accessor and the ExtensionDtypes.
 - `*_info` functions check a cached `has_pandas()` flag: return a typed **DataFrame** when present,
   else a plain **`list[dict]`** (still useful, still typed scalars in each row).
@@ -324,7 +324,7 @@ This mirrors `fs`'s R philosophy: hard deps minimal (`Imports: methods`), rich i
 ## 10. Build & tooling
 
 - **Backend:** setuptools (`[build-system] requires = ["setuptools>=68"]`).
-- **Layout:** flat — `[tool.setuptools.packages.find] where = ["."]`, `include = ["pyfs*"]`.
+- **Layout:** flat — `[tool.setuptools.packages.find] where = ["."]`, `include = ["pyrfs*"]`.
 - **Env/locking:** `uv` (`uv sync`, `uv run …`).
 - **Python:** `requires-python = ">=3.10"`.
 - **Extras:** `pandas = ["pandas>=2.0"]`, optional `color`, `dev = ["pytest","ruff","mypy"]`.
@@ -373,6 +373,6 @@ three surfaces*.
   to be pinned down with tests in P5.
 - **Windows specifics.** `user_ids`/`group_ids` return empty frames (no `pwd`/`grp`); symlink
   creation may require privilege. Tidy paths always use `/`. To be verified on a Windows runner.
-- **`path_expand` semantics.** `fs` distinguishes `path_expand` vs `path_expand_r`; pyfs maps the
+- **`path_expand` semantics.** `fs` distinguishes `path_expand` vs `path_expand_r`; pyrfs maps the
   former to `os.path.expanduser` and will document any divergence rather than hide it.
-- **`dir_move`.** Like `fs`, pyfs intentionally has no `dir_move` — directories move via `file_move`.
+- **`dir_move`.** Like `fs`, pyrfs intentionally has no `dir_move` — directories move via `file_move`.

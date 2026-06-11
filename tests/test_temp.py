@@ -1,7 +1,7 @@
 """file_temp and the deterministic push/pop stack."""
 
-import pyfs as fs
-from pyfs import FsPath
+import pyrfs as fs
+from pyrfs import FsPath
 
 
 class TestFileTemp:

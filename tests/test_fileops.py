@@ -6,8 +6,8 @@ import stat
 
 import pytest
 
-import pyfs as fs
-from pyfs import Bytes, FsPath, FsValueError, Perms
+import pyrfs as fs
+from pyrfs import Bytes, FsPath, FsValueError, Perms
 
 
 @pytest.fixture
@@ -142,7 +142,7 @@ class TestQueries:
 
     def test_info_row_types(self, base: FsPath) -> None:
         # engine rows; the public fs.file_info upgrades to a DataFrame with pandas
-        from pyfs._engine.fileops import file_info as engine_file_info
+        from pyrfs._engine.fileops import file_info as engine_file_info
 
         p = fs.file_create(base / "a.txt")
         rows = engine_file_info(p)
@@ -154,7 +154,7 @@ class TestQueries:
         assert isinstance(row["permissions"], Perms)
 
     def test_info_many(self, base: FsPath) -> None:
-        from pyfs._engine.fileops import file_info as engine_file_info
+        from pyrfs._engine.fileops import file_info as engine_file_info
 
         ps = fs.file_create([base / "x", base / "y"])
         rows = engine_file_info(ps)

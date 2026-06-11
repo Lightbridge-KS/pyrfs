@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyfs.display import tidy
+from pyrfs.display import tidy
 
 
 @pytest.mark.parametrize(

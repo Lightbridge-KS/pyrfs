@@ -23,7 +23,7 @@ _TYPE_CHECKS: tuple[tuple[Callable[[int], bool], str], ...] = (
 )
 
 ENTRY_TYPES: frozenset[str] = frozenset(name for _, name in _TYPE_CHECKS)
-"""Every concrete entry-type name pyfs can report."""
+"""Every concrete entry-type name pyrfs can report."""
 
 
 def type_from_mode(mode: int) -> str:

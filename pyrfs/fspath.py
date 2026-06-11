@@ -2,7 +2,7 @@
 
 Because ``FsPath`` subclasses ``str`` it drops into any API expecting a path
 string (``open()``, ``pd.read_csv()``, ``os.fspath()``) with no conversion.
-All path logic delegates to ``pyfs._engine`` — one engine, three surfaces.
+All path logic delegates to ``pyrfs._engine`` — one engine, three surfaces.
 """
 
 from __future__ import annotations
@@ -11,8 +11,8 @@ import os
 import pathlib
 from collections.abc import Iterable, Iterator
 
-from pyfs.display import colourise_path, tidy
-from pyfs.values import Bytes
+from pyrfs.display import colourise_path, tidy
+from pyrfs.values import Bytes
 
 __all__ = ["FsPath"]
 
@@ -124,7 +124,7 @@ class FsPath(str):
         return _fileops.file_access(self, mode)
 
     def size(self) -> Bytes:
-        """File size as a :class:`~pyfs.Bytes` value."""
+        """File size as a :class:`~pyrfs.Bytes` value."""
         return _fileops.file_size(self)
 
     def chmod(self, mode: int | str) -> FsPath:
@@ -220,7 +220,7 @@ class FsPath(str):
 
 # Imported at the bottom to break the FsPath <-> engine import cycle:
 # the engine returns FsPath; FsPath methods delegate to the engine.
-from pyfs._engine import dirops as _dirops  # noqa: E402
-from pyfs._engine import fileops as _fileops  # noqa: E402
-from pyfs._engine import paths as _paths  # noqa: E402
-from pyfs._engine import predicates as _predicates  # noqa: E402
+from pyrfs._engine import dirops as _dirops  # noqa: E402
+from pyrfs._engine import fileops as _fileops  # noqa: E402
+from pyrfs._engine import paths as _paths  # noqa: E402
+from pyrfs._engine import predicates as _predicates  # noqa: E402

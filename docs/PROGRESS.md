@@ -1,6 +1,6 @@
-# pyfs — Implementation Progress
+# pyrfs — Implementation Progress
 
-> Build tracker for **pyfs** (Pythonic port of R's `fs`). Design: [`pyfs-architecture.md`](./pyfs-architecture.md) · [`pyfs-ux.md`](./pyfs-ux.md)
+> Build tracker for **pyrfs** (Pythonic port of R's `fs`). Design: [`pyrfs-architecture.md`](./pyrfs-architecture.md) · [`pyrfs-ux.md`](./pyrfs-ux.md)
 > Legend: `[ ]` todo · `[~]` in progress · `[x]` done · Status updated: 2026-06-11
 
 ## Status snapshot
@@ -22,13 +22,13 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
 
 ## P0 — Project scaffold
 - [x] `uv init`; `pyproject.toml` with setuptools backend, `requires-python = ">=3.10"`
-- [x] Flat layout: package at `pyfs/pyfs/`; `[tool.setuptools.packages.find] where=["."] include=["pyfs*"]`
+- [x] Flat layout: package at `pyrfs/pyrfs/`; `[tool.setuptools.packages.find] where=["."] include=["pyrfs*"]`
 - [x] Optional deps: `pandas`, `dev = [pytest, ruff, mypy]` (dependency-group; `color` extra deferred to P6)
 - [x] Tooling config: `ruff` (lint+format), `mypy` (strict), `pytest`
-- [x] Ship `pyfs/py.typed`; `pyfs/__init__.py` with `__version__`
+- [x] Ship `pyrfs/py.typed`; `pyrfs/__init__.py` with `__version__`
 - [x] `tests/` dir + a trivial `test_import.py`
 - [x] CI workflow (lint + type + test matrix; with and without `[pandas]`)
-- **Gate:** `uv run pytest`, `uv run mypy --strict pyfs`, `uv run ruff check` all green.
+- **Gate:** `uv run pytest`, `uv run mypy --strict pyrfs`, `uv run ruff check` all green.
 
 ## P1 — Path algebra + `FsPath`
 - [x] `display.tidy()` — normalize to `/`, collapse `//`, strip trailing `/`, UTF-8
@@ -97,7 +97,7 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
 - [x] `_pandas/frames.py`: typed `*_info` DataFrames (path/bytes/perms dtypes, datetime cols)
 - [x] `_pandas/accessor.py`: `Series.fs` → ext/with_ext/ext_remove/dir/name/norm/expand/abs/
       real/rel_to/has_parent/exists/is_file/is_dir/is_link/size
-- [x] `pyfs/info.py`: public `file_info`/`dir_info` + cached `has_pandas()`; engine stays
+- [x] `pyrfs/info.py`: public `file_info`/`dir_info` + cached `has_pandas()`; engine stays
       `list[dict]`; `__init__` registers the layer via `contextlib.suppress(ImportError)`
 - [x] Tests: dtype construction/comparisons/reductions/sorting, accessor ops, headline
       `query("size > '1KB'")` demo, empty-frame schema; suite green **with** the extra
@@ -106,7 +106,7 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
 - Notes: arrays are float64-backed (NaN = NA, like fs's numeric `fs_bytes`); dtype names are
   `"bytes"`/`"perms"`/`"path"` (registry wins over numpy for `astype("bytes")`); mypy treats
   pandas/numpy as opaque (`follow_imports = "skip"`) so `--strict` is deterministic with or
-  without the extra — core stays fully strict, `pyfs._pandas.*` has narrow relaxations;
+  without the extra — core stays fully strict, `pyrfs._pandas.*` has narrow relaxations;
   groupby reductions on typed columns beyond min/max/sum → parking lot.
 
 ## P6 — Display, docs, packaging
@@ -116,23 +116,25 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
 - [ ] README with quickstart; docstring pass (NumPy style) on all public API
       — deferred: documentation approach to be discussed
 - [x] `examples/` notebook: the three surfaces + pandas pipe workflow
-      (`examples/pyfs-tour.ipynb`; code cells verified to run top-to-bottom)
+      (`examples/pyrfs-tour.ipynb`; code cells verified to run top-to-bottom)
 - [x] Build sdist+wheel (`uv build`); smoke-install in clean venv (core only, then `[pandas]`)
-- [x] Published to **GitHub** (https://github.com/Lightbridge-KS/pyfs); TestPyPI + tag → later
+- [x] Published to **GitHub** (https://github.com/Lightbridge-KS/pyrfs); TestPyPI + tag → later
 - **Gate:** clean install both flavors; examples run top-to-bottom. ✅ (docs portion pending)
 
 ---
 
 ## Cross-phase definition of done
 - [ ] `uv run ruff check` + `uv run ruff format --check` clean
-- [ ] `uv run mypy --strict pyfs` clean (no `Any`)
+- [ ] `uv run mypy --strict pyrfs` clean (no `Any`)
 - [ ] `uv run pytest` green **with** and **without** the `[pandas]` extra
 - [ ] Public API has NumPy-style docstrings + type annotations
 - [ ] Smoke test: fluent copy/move/delete round-trip in a tmp dir + `dir_info().query(...)` demo
 
 ## Parking lot / later
 - `path_select_components` and `path_package` (R-isms; revisit demand for Python equivalents).
-- Check PyPI availability of the `pyfs` distribution name before P6 publish (import name stays `pyfs`).
+- ~~Check PyPI availability of the distribution name~~ — resolved 2026-06-11: `pyfs` was
+  taken on PyPI, so the package was renamed **`pyfs` → `pyrfs`** (the `r` nods to R's fs);
+  `pyrfs` verified free (PyPI 404). Import and distribution name are both `pyrfs`.
 - Async variants (`aiofiles`-backed) — out of scope for v1.
 - Remote/cloud backends — explicit non-goal (use `fsspec`).
 - Rich/`textual` integration for `dir_tree` — nice-to-have.

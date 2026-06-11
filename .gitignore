@@ -221,5 +221,5 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# pyfs project-specific
+# pyrfs project-specific
 _playground/

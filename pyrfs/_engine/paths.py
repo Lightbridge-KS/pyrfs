@@ -15,10 +15,10 @@ import tempfile
 from collections.abc import Iterable
 from typing import cast
 
-from pyfs._engine.vectorize import PathInput, vectorized
-from pyfs.display import tidy
-from pyfs.errors import FsValueError
-from pyfs.fspath import FsPath
+from pyrfs._engine.vectorize import PathInput, vectorized
+from pyrfs.display import tidy
+from pyrfs.errors import FsValueError
+from pyrfs.fspath import FsPath
 
 __all__ = [
     "path",

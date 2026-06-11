@@ -5,8 +5,8 @@ from typing import ClassVar
 
 import pytest
 
-import pyfs as fs
-from pyfs import FsPath, FsValueError
+import pyrfs as fs
+from pyrfs import FsPath, FsValueError
 
 
 class TestPath:

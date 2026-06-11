@@ -6,9 +6,9 @@ import pytest
 
 pd = pytest.importorskip("pandas")
 
-import pyfs as fs  # noqa: E402
-from pyfs import Bytes, FsPath, Perms  # noqa: E402
-from pyfs._pandas.arrays import BytesArray, PathArray, PermsArray  # noqa: E402
+import pyrfs as fs  # noqa: E402
+from pyrfs import Bytes, FsPath, Perms  # noqa: E402
+from pyrfs._pandas.arrays import BytesArray, PathArray, PermsArray  # noqa: E402
 
 
 @pytest.fixture

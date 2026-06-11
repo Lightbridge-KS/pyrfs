@@ -3,7 +3,7 @@
 import os
 import pathlib
 
-from pyfs import FsPath
+from pyrfs import FsPath
 
 
 class TestConstruction:

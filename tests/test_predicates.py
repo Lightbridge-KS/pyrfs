@@ -5,8 +5,8 @@ import sys
 
 import pytest
 
-import pyfs as fs
-from pyfs import FsPath
+import pyrfs as fs
+from pyrfs import FsPath
 
 
 @pytest.fixture

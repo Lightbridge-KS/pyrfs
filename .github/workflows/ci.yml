@@ -15,7 +15,7 @@ jobs:
       - run: uv sync
       - run: uv run ruff check
       - run: uv run ruff format --check
-      - run: uv run mypy --strict pyfs
+      - run: uv run mypy --strict pyrfs
 
   tests:
     name: pytest (py${{ matrix.python }}, ${{ matrix.extras }})

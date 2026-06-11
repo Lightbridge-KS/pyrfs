@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyfs import Bytes, FsValueError, Perms
+from pyrfs import Bytes, FsValueError, Perms
 
 
 class TestBytesConstruction:

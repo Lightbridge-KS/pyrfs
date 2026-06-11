@@ -2,8 +2,8 @@
 
 import pytest
 
-from pyfs import FsValueError
-from pyfs.display import humanize_bytes, parse_bytes, parse_perms, perms_to_str
+from pyrfs import FsValueError
+from pyrfs.display import humanize_bytes, parse_bytes, parse_perms, perms_to_str
 
 
 class TestHumanizeBytes:

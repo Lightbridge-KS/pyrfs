@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import os
 
-from pyfs._engine.vectorize import PathInput, vectorized
-from pyfs.errors import FsValueError
-from pyfs.fspath import FsPath
+from pyrfs._engine.vectorize import PathInput, vectorized
+from pyrfs.errors import FsValueError
+from pyrfs.fspath import FsPath
 
 __all__ = [
     "link_copy",

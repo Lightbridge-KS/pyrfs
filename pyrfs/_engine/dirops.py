@@ -15,12 +15,12 @@ import shutil
 import warnings
 from collections.abc import Callable, Iterable, Iterator
 
-from pyfs._engine.entry_types import ENTRY_TYPES, type_from_mode
-from pyfs._engine.fileops import file_info
-from pyfs._engine.vectorize import PathInput, vectorized
-from pyfs.display import colourise_path, parse_perms
-from pyfs.errors import FsValueError
-from pyfs.fspath import FsPath
+from pyrfs._engine.entry_types import ENTRY_TYPES, type_from_mode
+from pyrfs._engine.fileops import file_info
+from pyrfs._engine.vectorize import PathInput, vectorized
+from pyrfs.display import colourise_path, parse_perms
+from pyrfs.errors import FsValueError
+from pyrfs.fspath import FsPath
 
 __all__ = [
     "dir_copy",
@@ -160,8 +160,8 @@ def dir_ls(
 
     Examples
     --------
-    >>> dir_ls("pyfs", recurse=True, glob="*.py")  # doctest: +SKIP
-    [FsPath('pyfs/__init__.py'), ...]
+    >>> dir_ls("pyrfs", recurse=True, glob="*.py")  # doctest: +SKIP
+    [FsPath('pyrfs/__init__.py'), ...]
     """
     return list(
         dir_walk(
@@ -241,8 +241,8 @@ def dir_tree(
 
     Examples
     --------
-    >>> dir_tree("pyfs")  # doctest: +SKIP
-    pyfs
+    >>> dir_tree("pyrfs")  # doctest: +SKIP
+    pyrfs
     ├── __init__.py
     └── _engine
         └── paths.py

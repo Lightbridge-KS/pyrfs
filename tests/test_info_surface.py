@@ -7,8 +7,8 @@ import pathlib
 
 import pytest
 
-import pyfs as fs
-from pyfs import Bytes, FsPath, has_pandas
+import pyrfs as fs
+from pyrfs import Bytes, FsPath, has_pandas
 
 
 @pytest.mark.skipif(has_pandas(), reason="pandas installed: DataFrame surface applies")

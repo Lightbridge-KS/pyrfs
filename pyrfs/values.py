@@ -8,7 +8,7 @@ everywhere, but parses human literals and prints for humans.
 
 from __future__ import annotations
 
-from pyfs.display import humanize_bytes, parse_bytes, parse_perms, perms_to_str
+from pyrfs.display import humanize_bytes, parse_bytes, parse_perms, perms_to_str
 
 __all__ = ["Bytes", "Perms"]
 

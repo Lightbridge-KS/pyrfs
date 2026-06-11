@@ -15,12 +15,12 @@ import subprocess
 import sys
 from collections.abc import Iterable
 
-from pyfs._engine.entry_types import type_from_mode
-from pyfs._engine.vectorize import PathInput, vectorized
-from pyfs.display import parse_perms
-from pyfs.errors import FsValueError
-from pyfs.fspath import FsPath
-from pyfs.values import Bytes, Perms
+from pyrfs._engine.entry_types import type_from_mode
+from pyrfs._engine.vectorize import PathInput, vectorized
+from pyrfs.display import parse_perms
+from pyrfs.errors import FsValueError
+from pyrfs.fspath import FsPath
+from pyrfs.values import Bytes, Perms
 
 __all__ = [
     "file_access",
@@ -155,7 +155,7 @@ def file_access(path: str, mode: str = "exists") -> bool:
 
 @vectorized
 def file_size(path: str) -> Bytes:
-    """File size as a :class:`~pyfs.Bytes` value.
+    """File size as a :class:`~pyrfs.Bytes` value.
 
     Examples
     --------

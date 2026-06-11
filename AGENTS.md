@@ -1,31 +1,31 @@
-# pyfs — Agent Instructions
+# pyrfs — Agent Instructions
 
 Pythonic port of R's [`fs`](https://fs.r-lib.org) UX: tidy paths, typed values
 (`FsPath`/`Bytes`/`Perms`), chainable, pandas-friendly. Pure Python ≥ 3.10, stdlib-only core.
 
-**Design docs (read before structural changes):** `docs/pyfs-ux.md` (API feel),
-`docs/pyfs-architecture.md` (structure), `docs/PROGRESS.md` (master tracker — update its
+**Design docs (read before structural changes):** `docs/pyrfs-ux.md` (API feel),
+`docs/pyrfs-architecture.md` (structure), `docs/PROGRESS.md` (master tracker — update its
 checkboxes when you complete tracked work).
 
 ## Architecture invariants
 
-- **One engine, three surfaces.** All logic lives in `pyfs/_engine/`; the functional API,
+- **One engine, three surfaces.** All logic lives in `pyrfs/_engine/`; the functional API,
   `FsPath` methods, and the pandas `.fs` accessor are thin delegates. Never duplicate logic
   in a surface.
-- **`pyfs/_engine/`, `values.py`, `display.py` never import pandas** (not even indirectly).
-  `pyfs/_pandas/` depends inward on them, never the reverse. Optional registration happens in
-  `pyfs/__init__.py` via `contextlib.suppress(ImportError)`.
-- Engine `*_info` always returns `list[dict]`; the public surface (`pyfs/info.py`) upgrades
+- **`pyrfs/_engine/`, `values.py`, `display.py` never import pandas** (not even indirectly).
+  `pyrfs/_pandas/` depends inward on them, never the reverse. Optional registration happens in
+  `pyrfs/__init__.py` via `contextlib.suppress(ImportError)`.
+- Engine `*_info` always returns `list[dict]`; the public surface (`pyrfs/info.py`) upgrades
   to a typed DataFrame when pandas is present.
 - `display.py` is the single source of truth for parse/format (bytes, perms, tidy, colour).
-- Layout is flat: the package is `pyfs/` at repo root (no `src/`).
+- Layout is flat: the package is `pyrfs/` at repo root (no `src/`).
 
 ## Commands
 
 ```sh
 uv sync                                  # core dev env
 uv run ruff check && uv run ruff format --check
-uv run mypy --strict pyfs                # must stay clean
+uv run mypy --strict pyrfs                # must stay clean
 uv run --extra pandas pytest             # full suite (pandas mode)
 uv sync --exact && uv run --no-sync pytest   # core mode (prunes pandas first!)
 ```
@@ -38,13 +38,13 @@ in `.venv`; a plain `uv run pytest` afterwards is NOT a core-mode run — prune 
 
 - `mypy --strict`, no `Any` in the core package. pandas/numpy are opaque to mypy
   (`follow_imports = "skip"` in pyproject) so results are identical with/without the extra;
-  only `pyfs._pandas.*` has narrow relaxations.
+  only `pyrfs._pandas.*` has narrow relaxations.
 - NumPy-style docstrings on public API; public methods before private in classes.
 - fs argument conventions: behavior flags keyword-only; safe defaults
   (`overwrite=False`, `recurse=False` for listing / `True` for `dir_create`, `all=False`,
   `fail=True`); `glob`/`regexp` mutually exclusive → `FsValueError`.
 - Errors: native `OSError` subclasses for OS failures; `FsError`/`FsValueError` for
-  pyfs-level validation only.
+  pyrfs-level validation only.
 - Conventional Commits, committed directly to `main` (early phase); CI must be green.
 
 ## Semantics worth knowing (deliberate, don't "fix")

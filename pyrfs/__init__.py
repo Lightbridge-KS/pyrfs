@@ -1,12 +1,12 @@
-"""pyfs — Pythonic filesystem ergonomics inspired by R's fs.
+"""pyrfs — Pythonic filesystem ergonomics inspired by R's fs.
 
 Tidy paths, typed self-describing values, chainable operations, and
-optional pandas integration. See https://github.com/Lightbridge-KS/pyfs.
+optional pandas integration. See https://github.com/Lightbridge-KS/pyrfs.
 """
 
 import contextlib
 
-from pyfs._engine.dirops import (
+from pyrfs._engine.dirops import (
     dir_copy,
     dir_create,
     dir_delete,
@@ -16,7 +16,7 @@ from pyfs._engine.dirops import (
     dir_tree,
     dir_walk,
 )
-from pyfs._engine.fileops import (
+from pyrfs._engine.fileops import (
     file_access,
     file_chmod,
     file_chown,
@@ -29,15 +29,15 @@ from pyfs._engine.fileops import (
     file_size,
     file_touch,
 )
-from pyfs._engine.ids import group_ids, user_ids
-from pyfs._engine.linkops import (
+from pyrfs._engine.ids import group_ids, user_ids
+from pyrfs._engine.linkops import (
     link_copy,
     link_create,
     link_delete,
     link_exists,
     link_path,
 )
-from pyfs._engine.paths import (
+from pyrfs._engine.paths import (
     path,
     path_abs,
     path_common,
@@ -60,7 +60,7 @@ from pyfs._engine.paths import (
     path_tidy,
     path_wd,
 )
-from pyfs._engine.predicates import (
+from pyrfs._engine.predicates import (
     is_absolute_path,
     is_dir,
     is_dir_empty,
@@ -68,11 +68,11 @@ from pyfs._engine.predicates import (
     is_file_empty,
     is_link,
 )
-from pyfs._engine.temp import file_temp, file_temp_pop, file_temp_push
-from pyfs.errors import FsError, FsValueError
-from pyfs.fspath import FsPath
-from pyfs.info import dir_info, file_info, has_pandas
-from pyfs.values import Bytes, Perms
+from pyrfs._engine.temp import file_temp, file_temp_pop, file_temp_push
+from pyrfs.errors import FsError, FsValueError
+from pyrfs.fspath import FsPath
+from pyrfs.info import dir_info, file_info, has_pandas
+from pyrfs.values import Bytes, Perms
 
 __version__ = "0.1.0"
 
@@ -147,4 +147,4 @@ __all__ = [
 # Optional pandas layer: importing it registers the dtypes and the Series.fs
 # accessor; without pandas installed the core works unchanged.
 with contextlib.suppress(ImportError):
-    import pyfs._pandas  # noqa: F401
+    import pyrfs._pandas  # noqa: F401

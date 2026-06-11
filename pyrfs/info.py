@@ -2,7 +2,7 @@
 
 The engine always produces ``list[dict]`` rows of typed scalars; this module
 upgrades them to a typed DataFrame (``path``/``size``/``permissions`` columns
-use the pyfs ExtensionDtypes) when pandas is available.
+use the pyrfs ExtensionDtypes) when pandas is available.
 """
 
 from __future__ import annotations
@@ -11,9 +11,9 @@ import functools
 from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
-from pyfs._engine import dirops as _dirops
-from pyfs._engine import fileops as _fileops
-from pyfs._engine.vectorize import PathInput
+from pyrfs._engine import dirops as _dirops
+from pyrfs._engine import fileops as _fileops
+from pyrfs._engine.vectorize import PathInput
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -37,7 +37,7 @@ def file_info(
     """Stat path(s) into a typed table.
 
     Returns a DataFrame with typed columns (``path``/``size``/``permissions``
-    as pyfs dtypes) when pandas is installed, else ``list[dict]`` rows.
+    as pyrfs dtypes) when pandas is installed, else ``list[dict]`` rows.
 
     Examples
     --------
@@ -63,7 +63,7 @@ def dir_info(
 
     Examples
     --------
-    >>> (dir_info("pyfs", recurse=True)              # doctest: +SKIP
+    >>> (dir_info("pyrfs", recurse=True)              # doctest: +SKIP
     ...     .query("size > '10KB' and type == 'file'")
     ...     .sort_values("size", ascending=False))
     """
@@ -84,7 +84,7 @@ def _maybe_frame(
     rows: list[dict[str, object]],
 ) -> pd.DataFrame | list[dict[str, object]]:
     if has_pandas():
-        from pyfs._pandas.frames import info_frame
+        from pyrfs._pandas.frames import info_frame
 
         return info_frame(rows)
     return rows

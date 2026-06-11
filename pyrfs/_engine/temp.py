@@ -13,8 +13,8 @@ import tempfile
 import uuid
 from collections.abc import Iterable
 
-from pyfs._engine.vectorize import PathInput
-from pyfs.fspath import FsPath
+from pyrfs._engine.vectorize import PathInput
+from pyrfs.fspath import FsPath
 
 __all__ = ["file_temp", "file_temp_pop", "file_temp_push"]
 

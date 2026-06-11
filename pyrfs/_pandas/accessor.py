@@ -1,4 +1,4 @@
-"""The ``Series.fs`` accessor — vectorized pyfs operations over a path column.
+"""The ``Series.fs`` accessor — vectorized pyrfs operations over a path column.
 
 Each method delegates to the engine (whose ``@vectorized`` functions already
 map over a Series), then types the result column: paths -> ``"path"`` dtype,
@@ -10,10 +10,10 @@ from __future__ import annotations
 import pandas as pd
 from pandas.api.extensions import register_series_accessor
 
-from pyfs._engine import fileops as _fileops
-from pyfs._engine import paths as _paths
-from pyfs._engine import predicates as _predicates
-from pyfs._engine.vectorize import PathInput
+from pyrfs._engine import fileops as _fileops
+from pyrfs._engine import paths as _paths
+from pyrfs._engine import predicates as _predicates
+from pyrfs._engine.vectorize import PathInput
 
 __all__ = ["FsSeriesAccessor"]
 

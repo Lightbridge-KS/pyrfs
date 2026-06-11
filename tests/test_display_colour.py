@@ -5,9 +5,9 @@ import pathlib
 
 import pytest
 
-import pyfs as fs
-from pyfs import FsPath
-from pyfs.display import colour_enabled, colourise_path
+import pyrfs as fs
+from pyrfs import FsPath
+from pyrfs.display import colour_enabled, colourise_path
 
 DI_BLUE = "\x1b[01;34m"
 EX_GREEN = "\x1b[01;32m"
