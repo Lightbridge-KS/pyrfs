@@ -1,0 +1,92 @@
+name: Release
+
+# The release button is the tag: `git tag v0.1.0 && git push --tags`.
+# Flow: gate (incl. tag == pyproject version) -> build -> TestPyPI
+# (Trusted Publishing, no tokens) -> draft GitHub release (human publishes).
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: full gate + version guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: quarto-dev/quarto-actions/setup@v2
+      - name: Tag must match pyproject version
+        run: |
+          PKG_VERSION="$(uv version --short)"
+          test "v${PKG_VERSION}" = "${GITHUB_REF_NAME}" || {
+            echo "::error::tag ${GITHUB_REF_NAME} != pyproject v${PKG_VERSION}"
+            exit 1
+          }
+      - run: make gate
+
+  build:
+    name: build sdist + wheel
+    needs: gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-testpypi:
+    name: publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/pyrfs
+    permissions:
+      id-token: write  # OIDC for Trusted Publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  github-release:
+    name: draft GitHub release
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Extract release notes from CHANGELOG
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v ver="$VERSION" '
+            $0 ~ "^## \\[" ver "\\]" { flag = 1; next }
+            /^## \[/ { flag = 0 }
+            flag && /^\[.*\]: http/ { next }
+            flag { print }
+          ' CHANGELOG.md > notes.md
+          test -s notes.md || echo "_See CHANGELOG.md_" > notes.md
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --draft \
+            --title "pyrfs $GITHUB_REF_NAME" \
+            --notes-file notes.md \
+            dist/*

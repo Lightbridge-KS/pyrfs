@@ -5,6 +5,7 @@ optional pandas integration. See https://github.com/Lightbridge-KS/pyrfs.
 """
 
 import contextlib
+import importlib.metadata
 
 from pyrfs._engine.dirops import (
     dir_copy,
@@ -74,7 +75,11 @@ from pyrfs.fspath import FsPath
 from pyrfs.info import dir_info, file_info, has_pandas
 from pyrfs.values import Bytes, Perms
 
-__version__ = "0.1.0"
+# Single source of truth for the version is pyproject.toml (bump with `uv version`).
+try:
+    __version__ = importlib.metadata.version("pyrfs")
+except importlib.metadata.PackageNotFoundError:  # uninstalled checkout
+    __version__ = "0.0.0.dev0"
 
 __all__ = [
     "Bytes",

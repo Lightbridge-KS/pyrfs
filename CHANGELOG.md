@@ -6,7 +6,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-Initial development toward **0.1.0** — a Pythonic port of the UX of R's
+## [0.1.0] - 2026-06-11
+
+Initial release — a Pythonic port of the UX of R's
 [fs](https://fs.r-lib.org) package.
 
 ### Added
@@ -55,4 +57,5 @@ Initial development toward **0.1.0** — a Pythonic port of the UX of R's
   llms.txt/llms-full.txt, an executed tour notebook, and a Quarto-rendered
   README kept fresh by CI.
 
-[Unreleased]: https://github.com/Lightbridge-KS/pyrfs/commits/main
+[Unreleased]: https://github.com/Lightbridge-KS/pyrfs/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Lightbridge-KS/pyrfs/releases/tag/v0.1.0

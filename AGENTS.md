@@ -59,6 +59,17 @@ handles the pruning for you.
   pyrfs-level validation only.
 - Conventional Commits, committed directly to `main` (early phase); CI must be green.
 
+## Releases
+
+The version's single source of truth is `pyproject.toml` (bump with
+`uv version --bump …`; `pyrfs.__version__` reads it via importlib.metadata).
+To release: bump version → move the CHANGELOG `[Unreleased]` content under a
+new `## [X.Y.Z] - date` heading (keep an empty `[Unreleased]`, update the
+link refs) → `make gate` → commit/push → `git tag vX.Y.Z && git push --tags`.
+The tag triggers `.github/workflows/release.yml`: gate + tag/version guard →
+build → TestPyPI via Trusted Publishing (environment `testpypi`, no tokens) →
+**draft** GitHub release with changelog-derived notes (a human publishes it).
+
 ## Semantics worth knowing (deliberate, don't "fix")
 
 - `FsPath` subclasses `str` — never shadow `str` methods (the split method is `parts()`).
