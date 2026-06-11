@@ -11,7 +11,7 @@ import os
 import pathlib
 from collections.abc import Iterable, Iterator
 
-from pyfs.display import tidy
+from pyfs.display import colourise_path, tidy
 from pyfs.values import Bytes
 
 __all__ = ["FsPath"]
@@ -45,7 +45,8 @@ class FsPath(str):
         return _paths.path(other, self)
 
     def __repr__(self) -> str:
-        return f"FsPath({str.__repr__(self)})"
+        # coloured by on-disk type via LS_COLORS; plain on non-TTY / NO_COLOR
+        return f"FsPath({colourise_path(self, str.__repr__(self))})"
 
     # -- pure path algebra (no I/O) --------------------------------------
     def ext(self) -> str:

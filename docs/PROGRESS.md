@@ -13,7 +13,7 @@
 | P3 | File ops + errors + temp | `[x]` |
 | P4 | Dir + link + ids | `[x]` |
 | P5 | pandas layer | `[x]` |
-| P6 | Display, docs, packaging | `[ ]` |
+| P6 | Display, docs, packaging | `[~]` |
 
 Guiding rules: tight feedback loops (test after each change); `mypy --strict` clean, no `Any`;
 NumPy-style docstrings on public API; public methods before private; `_engine` never imports pandas.
@@ -110,13 +110,16 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
   groupby reductions on typed columns beyond min/max/sum → parking lot.
 
 ## P6 — Display, docs, packaging
-- [ ] `display.py`: `LS_COLORS` colouriser for `FsPath.__repr__`; degrade on non-TTY/`NO_COLOR`
-- [ ] `dir_tree` colour; multicolumn path printing (optional)
+- [x] `display.py`: `LS_COLORS` colouriser for `FsPath.__repr__`; degrade on non-TTY/`NO_COLOR`
+      (`NO_COLOR` > `FORCE_COLOR` > TTY detection; default palette when `LS_COLORS` unset)
+- [x] `dir_tree` colour (multicolumn path printing → parking lot)
 - [ ] README with quickstart; docstring pass (NumPy style) on all public API
-- [ ] `examples/` notebook: the three surfaces + pandas pipe workflow
-- [ ] Build sdist+wheel (`uv build`); smoke-install in clean venv (core only, then `[pandas]`)
-- [ ] Publish to **TestPyPI** first; tag release
-- **Gate:** clean install both flavors; docs render; examples run top-to-bottom.
+      — deferred: documentation approach to be discussed
+- [x] `examples/` notebook: the three surfaces + pandas pipe workflow
+      (`examples/pyfs-tour.ipynb`; code cells verified to run top-to-bottom)
+- [x] Build sdist+wheel (`uv build`); smoke-install in clean venv (core only, then `[pandas]`)
+- [x] Published to **GitHub** (https://github.com/Lightbridge-KS/pyfs); TestPyPI + tag → later
+- **Gate:** clean install both flavors; examples run top-to-bottom. ✅ (docs portion pending)
 
 ---
 

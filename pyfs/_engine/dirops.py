@@ -18,7 +18,7 @@ from collections.abc import Callable, Iterable, Iterator
 from pyfs._engine.entry_types import ENTRY_TYPES, type_from_mode
 from pyfs._engine.fileops import file_info
 from pyfs._engine.vectorize import PathInput, vectorized
-from pyfs.display import parse_perms
+from pyfs.display import colourise_path, parse_perms
 from pyfs.errors import FsValueError
 from pyfs.fspath import FsPath
 
@@ -248,7 +248,7 @@ def dir_tree(
         └── paths.py
     """
     root = FsPath(path)
-    lines = [str(root)]
+    lines = [colourise_path(root)]
     _tree_lines(root, "", _depth_budget(recurse), all, lines)
     print("\n".join(lines))
 
@@ -312,7 +312,8 @@ def _tree_lines(path: FsPath, prefix: str, depth: int, all: bool, lines: list[st
     visible = [e for e in entries if all or not e.name.startswith(".")]
     for i, entry in enumerate(visible):
         last = i == len(visible) - 1
-        lines.append(f"{prefix}{'└── ' if last else '├── '}{entry.name}")
+        label = colourise_path(path / entry.name, entry.name)
+        lines.append(f"{prefix}{'└── ' if last else '├── '}{label}")
         if entry.is_dir(follow_symlinks=False) and depth != 0:
             _tree_lines(
                 path / entry.name,

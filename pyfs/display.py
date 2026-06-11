@@ -1,18 +1,23 @@
 """Formatting and parsing helpers — the single source of truth for display.
 
 Everything that turns raw values into human-readable text (or back) lives
-here: tidy paths, byte sizes, permission strings (colour arrives in P6).
+here: tidy paths, byte sizes, permission strings, LS_COLORS colouring.
 This module must never import pandas.
 """
 
 from __future__ import annotations
 
+import functools
 import os
 import re
+import stat
+import sys
 
 from pyfs.errors import FsValueError
 
 __all__ = [
+    "colour_enabled",
+    "colourise_path",
     "humanize_bytes",
     "parse_bytes",
     "parse_perms",
@@ -180,3 +185,79 @@ def _parse_symbolic(s: str, base: int = 0) -> int:
             else:
                 mode = (mode & ~(0o7 << shift)) | (triad << shift)
     return mode
+
+
+# -- colour ------------------------------------------------------------------
+
+_ANSI_RESET = "\x1b[0m"
+
+# fallback palette when LS_COLORS is unset (GNU dircolors defaults, trimmed)
+_DEFAULT_LS_COLORS = "di=01;34:ln=01;36:so=01;35:pi=33:ex=01;32:bd=33;01:cd=33;01"
+
+_MODE_TO_LS_KEY = (
+    (stat.S_ISLNK, "ln"),
+    (stat.S_ISDIR, "di"),
+    (stat.S_ISFIFO, "pi"),
+    (stat.S_ISSOCK, "so"),
+    (stat.S_ISBLK, "bd"),
+    (stat.S_ISCHR, "cd"),
+)
+
+
+def colour_enabled() -> bool:
+    """Whether pyfs should emit ANSI colours.
+
+    ``NO_COLOR`` (any value) disables; otherwise ``FORCE_COLOR`` (non-empty)
+    enables; otherwise colours are used only on a TTY with ``TERM != dumb``.
+    """
+    if os.environ.get("NO_COLOR") is not None:
+        return False
+    if os.environ.get("FORCE_COLOR"):
+        return True
+    if os.environ.get("TERM") == "dumb":
+        return False
+    return sys.stdout.isatty()
+
+
+def colourise_path(path: str, text: str | None = None) -> str:
+    """Wrap `text` (default: the path itself) in the path's LS_COLORS colour.
+
+    The colour is chosen from the on-disk type (directory, symlink,
+    executable, extension match, ...). Returns the text unchanged when colour
+    is disabled, the path does not exist, or no rule matches.
+    """
+    target = path if text is None else text
+    if not colour_enabled():
+        return target
+    code = _colour_code(path)
+    if not code:
+        return target
+    return f"\x1b[{code}m{target}{_ANSI_RESET}"
+
+
+@functools.lru_cache(maxsize=8)
+def _parse_ls_colors(spec: str) -> dict[str, str]:
+    table: dict[str, str] = {}
+    for item in spec.split(":"):
+        key, sep, value = item.partition("=")
+        if sep and key and value:
+            table[key] = value
+    return table
+
+
+def _colour_code(path: str) -> str | None:
+    try:
+        mode = os.lstat(path).st_mode
+    except OSError:
+        return None
+    table = _parse_ls_colors(os.environ.get("LS_COLORS") or _DEFAULT_LS_COLORS)
+    for check, key in _MODE_TO_LS_KEY:
+        if check(mode):
+            return table.get(key)
+    # regular files: executable bit, then extension rule, then generic
+    if mode & 0o111:
+        return table.get("ex")
+    ext = os.path.splitext(path)[1]
+    if ext and f"*{ext}" in table:
+        return table[f"*{ext}"]
+    return table.get("fi")
