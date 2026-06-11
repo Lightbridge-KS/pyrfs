@@ -11,6 +11,7 @@ import os
 import pathlib
 
 from pyfs.display import tidy
+from pyfs.values import Bytes
 
 __all__ = ["FsPath"]
 
@@ -91,6 +92,47 @@ class FsPath(str):
         """Canonical form with symlinks resolved (touches the filesystem)."""
         return _paths.path_real(self)
 
+    # -- file verbs (I/O) -------------------------------------------------
+    def copy_to(self, new_path: str | os.PathLike[str], *, overwrite: bool = False) -> FsPath:
+        """Copy this file to `new_path` (file name or existing directory)."""
+        return _fileops.file_copy(self, new_path, overwrite=overwrite)
+
+    def move_to(self, new_path: str | os.PathLike[str], *, overwrite: bool = False) -> FsPath:
+        """Move (rename) this file or directory to `new_path`."""
+        return _fileops.file_move(self, new_path, overwrite=overwrite)
+
+    def create(self, *, mode: int | str = 0o644) -> FsPath:
+        """Create this file (left unchanged if it already exists)."""
+        return _fileops.file_create(self, mode=mode)
+
+    def touch(self) -> FsPath:
+        """Update timestamps, creating the file if needed."""
+        return _fileops.file_touch(self)
+
+    def delete(self) -> None:
+        """Delete this file or symlink."""
+        _fileops.file_delete(self)
+
+    def exists(self) -> bool:
+        """Whether this path exists (broken symlinks count)."""
+        return _fileops.file_exists(self)
+
+    def access(self, mode: str = "exists") -> bool:
+        """Test access: ``"exists"``, ``"read"``, ``"write"``, ``"execute"``."""
+        return _fileops.file_access(self, mode)
+
+    def size(self) -> Bytes:
+        """File size as a :class:`~pyfs.Bytes` value."""
+        return _fileops.file_size(self)
+
+    def chmod(self, mode: int | str) -> FsPath:
+        """Change permissions (symbolic modes apply to the current mode)."""
+        return _fileops.file_chmod(self, mode)
+
+    def info(self) -> dict[str, object]:
+        """Stat this path into a row of typed values."""
+        return _fileops.file_info(self)[0]
+
     # -- interop ----------------------------------------------------------
     def as_pathlib(self) -> pathlib.Path:
         """This path as a ``pathlib.Path`` (for pathlib semantics)."""
@@ -99,4 +141,5 @@ class FsPath(str):
 
 # Imported at the bottom to break the FsPath <-> engine import cycle:
 # the engine returns FsPath; FsPath methods delegate to the engine.
+from pyfs._engine import fileops as _fileops  # noqa: E402
 from pyfs._engine import paths as _paths  # noqa: E402

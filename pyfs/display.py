@@ -128,9 +128,12 @@ def perms_to_str(mode: int) -> str:
     return "".join(out)
 
 
-def parse_perms(value: str | int) -> int:
+def parse_perms(value: str | int, *, base: int = 0) -> int:
     """Parse permissions from octal (``"644"``), symbolic (``"u+rw,go+r"``),
     display (``"rw-r--r--"``), or raw mode bits.
+
+    Octal, display, and int forms are absolute; symbolic clauses are applied
+    on top of `base` (pass the current mode to get chmod semantics).
 
     Raises
     ------
@@ -144,7 +147,7 @@ def parse_perms(value: str | int) -> int:
         return int(s, 8)
     if _RWX_PERMS.match(s):
         return _parse_rwx(s)
-    return _parse_symbolic(s)
+    return _parse_symbolic(s, base)
 
 
 def _parse_rwx(s: str) -> int:
@@ -159,8 +162,8 @@ def _parse_rwx(s: str) -> int:
     return mode
 
 
-def _parse_symbolic(s: str) -> int:
-    mode = 0
+def _parse_symbolic(s: str, base: int = 0) -> int:
+    mode = base
     for clause in s.split(","):
         m = _SYMBOLIC_CLAUSE.match(clause.strip())
         if m is None:

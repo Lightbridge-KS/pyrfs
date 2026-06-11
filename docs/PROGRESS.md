@@ -10,7 +10,7 @@
 | P0 | Project scaffold | `[x]` |
 | P1 | Path algebra + `FsPath` | `[x]` |
 | P2 | Typed scalars (`Bytes`, `Perms`) | `[x]` |
-| P3 | File ops + errors + temp | `[ ]` |
+| P3 | File ops + errors + temp | `[x]` |
 | P4 | Dir + link + ids | `[ ]` |
 | P5 | pandas layer | `[ ]` |
 | P6 | Display, docs, packaging | `[ ]` |
@@ -60,14 +60,19 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
   `Perms.__repr__` shows rwx form (round-trips exactly).
 
 ## P3 — File ops + errors + temp
-- [ ] `errors.py`: `FsError(Exception)` + `FsValueError`; helpers for arg validation
-- [ ] `_engine/fileops.py`: `file_create`, `file_copy`, `file_move`, `file_delete`, `file_touch`,
-      `file_show`, `file_access`, `file_exists`, `file_size` (→`Bytes`), `file_chmod`, `file_chown`
-- [ ] Safe defaults: `overwrite=False` → `FileExistsError`; keyword-only flags
-- [ ] `_engine/temp.py`: `file_temp` (+ deterministic push/pop stack), `path_temp`
-- [ ] `FsPath` verb methods: `copy_to`, `move_to`, `touch`, `delete`, `size`, `chmod`, `exists`
-- [ ] Tests in `tmp_path`: copy/move/delete round-trips, overwrite guard, temp stack determinism
-- **Gate:** file lifecycle works via functional + fluent surfaces; failures raise correctly.
+- [x] `errors.py`: `FsError(Exception)` + `FsValueError` (landed early in P1)
+- [x] `_engine/fileops.py`: `file_create`, `file_copy`, `file_move`, `file_delete`, `file_touch`,
+      `file_show`, `file_access`, `file_exists`, `file_size` (→`Bytes`), `file_chmod`, `file_chown`,
+      `file_info` (→`list[dict]` of typed rows; DataFrame upgrade in P5)
+- [x] Safe defaults: `overwrite=False` → `FileExistsError`; keyword-only flags;
+      copy/move into an existing dir targets `dir/basename`
+- [x] `_engine/temp.py`: `file_temp` (+ deterministic FIFO push/pop stack); `path_temp` in paths
+- [x] `FsPath` verb methods: `copy_to`, `move_to`, `create`, `touch`, `delete`, `size`, `chmod`,
+      `exists`, `access`, `info`
+- [x] Tests in `tmp_path`: copy/move/delete round-trips, overwrite guard, temp stack determinism
+- **Gate:** file lifecycle works via functional + fluent surfaces; failures raise correctly. ✅
+- Notes: `file_exists` uses `lexists` (broken symlink counts, matching fs);
+  `file_chmod` applies symbolic modes relative to the current mode (chmod semantics).
 
 ## P4 — Dir + link + ids
 - [ ] `_engine/dirops.py`: `dir_create` (`recurse=True`), `dir_copy`, `dir_delete`, `dir_exists`,
