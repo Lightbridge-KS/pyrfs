@@ -29,13 +29,16 @@ from pyfs._engine.paths import (
 )
 from pyfs.errors import FsError, FsValueError
 from pyfs.fspath import FsPath
+from pyfs.values import Bytes, Perms
 
 __version__ = "0.1.0"
 
 __all__ = [
+    "Bytes",
     "FsError",
     "FsPath",
     "FsValueError",
+    "Perms",
     "__version__",
     "path",
     "path_abs",

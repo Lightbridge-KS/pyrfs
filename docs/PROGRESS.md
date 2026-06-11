@@ -9,7 +9,7 @@
 |-------|-------|-------|
 | P0 | Project scaffold | `[x]` |
 | P1 | Path algebra + `FsPath` | `[x]` |
-| P2 | Typed scalars (`Bytes`, `Perms`) | `[ ]` |
+| P2 | Typed scalars (`Bytes`, `Perms`) | `[x]` |
 | P3 | File ops + errors + temp | `[ ]` |
 | P4 | Dir + link + ids | `[ ]` |
 | P5 | pandas layer | `[ ]` |
@@ -47,14 +47,17 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
   `path_select_components` + `path_package` deferred → parking lot.
 
 ## P2 — Typed scalars
-- [ ] `display.py`: `humanize_bytes`, `parse_bytes` (`"10MB"`, `"1.5GiB"`), `perms_to_str`,
-      `parse_perms` (octal `"644"`, symbolic `"u+rw,go+r"`)
-- [ ] `values.py`: `Bytes(int)` — construct from str/int, `repr/str/__format__`, comparison vs
-      string, arithmetic returns `Bytes`
-- [ ] `values.py`: `Perms(int)` — construct from octal/symbolic/int, `repr` → rwx, `& | ~` return
-      `Perms`, `==` parses string
-- [ ] Tests: parse/format round-trips, comparisons, operator results, edge units
-- **Gate:** `Bytes("10MB") < "1GB"`, `Perms("644") == "rw-r--r--"` behave as specified.
+- [x] `display.py`: `humanize_bytes`, `parse_bytes` (`"10MB"`, `"1.5GiB"`), `perms_to_str`,
+      `parse_perms` (octal `"644"`, symbolic `"u+rw,go+r"`, display `"rw-r--r--"`)
+- [x] `values.py`: `Bytes(int)` — construct from str/int, `repr/str/__format__`, comparison vs
+      string, arithmetic returns `Bytes` (incl. `sum()` via `__radd__`)
+- [x] `values.py`: `Perms(int)` — construct from octal/symbolic/int, `repr` → rwx, `& | ^ ~`
+      return `Perms`, `==` parses string
+- [x] Tests: parse/format round-trips, comparisons, operator results, edge units
+- **Gate:** `Bytes("10MB") < "1GB"`, `Perms("644") == "rw-r--r--"` behave as specified. ✅
+- Notes: all byte units are 1024-based matching R fs (`"10MB"` == `"10MiB"`);
+  `Bytes.__repr__` stays exact (`Bytes(455200)`), `str()`/`format()` humanize;
+  `Perms.__repr__` shows rwx form (round-trips exactly).
 
 ## P3 — File ops + errors + temp
 - [ ] `errors.py`: `FsError(Exception)` + `FsValueError`; helpers for arg validation
