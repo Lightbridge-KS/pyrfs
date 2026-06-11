@@ -8,7 +8,7 @@
 | Phase | Title | State |
 |-------|-------|-------|
 | P0 | Project scaffold | `[x]` |
-| P1 | Path algebra + `FsPath` | `[ ]` |
+| P1 | Path algebra + `FsPath` | `[x]` |
 | P2 | Typed scalars (`Bytes`, `Perms`) | `[ ]` |
 | P3 | File ops + errors + temp | `[ ]` |
 | P4 | Dir + link + ids | `[ ]` |
@@ -31,16 +31,20 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
 - **Gate:** `uv run pytest`, `uv run mypy --strict pyfs`, `uv run ruff check` all green.
 
 ## P1 — Path algebra + `FsPath`
-- [ ] `display.tidy()` — normalize to `/`, collapse `//`, strip trailing `/`, UTF-8
-- [ ] `_engine/paths.py`: `path`, `path_wd`, `path_abs`, `path_real`, `path_norm`, `path_rel`,
+- [x] `display.tidy()` — normalize to `/`, collapse `//`, strip trailing `/`, UTF-8
+- [x] `_engine/paths.py`: `path`, `path_wd`, `path_abs`, `path_real`, `path_norm`, `path_rel`,
       `path_split`, `path_join`, `path_file`, `path_dir`, `path_ext`, `path_ext_remove`,
-      `path_ext_set`, `path_common`, `path_filter`, `path_has_parent`, `path_expand[_r]`,
-      `path_home[_r]`, `path_sanitize`, `path_select_components`, `path_package`, `path_temp`
-- [ ] `fspath.py`: `FsPath(str)` — `__truediv__`, `with_ext`, `ext`, `dir`, `name`, `abs`, `real`,
-      `rel_to`, `split`, `as_pathlib`; pure-path methods delegate to `_engine/paths`
-- [ ] `_engine/vectorize.py`: `@vectorized` (scalar | list | Series dispatch)
-- [ ] Tests: tidy edge cases, ext round-trips, `path_rel`/`path_common`, vectorized inputs
-- **Gate:** path algebra fully covered; `FsPath("a") / "b"` and chains work.
+      `path_ext_set`, `path_common`, `path_filter`, `path_has_parent`, `path_expand`,
+      `path_home`, `path_sanitize`, `path_tidy`, `path_temp`
+- [x] `fspath.py`: `FsPath(str)` — `__truediv__`/`__rtruediv__`, `with_ext`, `ext`, `dir`, `name`,
+      `abs`, `real`, `norm`, `expand`, `rel_to`, `has_parent`, `parts`, `as_pathlib`;
+      delegates to `_engine/paths`
+- [x] `_engine/vectorize.py`: `@vectorized` (scalar | list | Series dispatch)
+- [x] Tests: tidy edge cases, ext round-trips, `path_rel`/`path_common`, vectorized inputs
+- **Gate:** path algebra fully covered; `FsPath("a") / "b"` and chains work. ✅
+- Notes: fluent split is named `parts()` (overriding `str.split` would break str interop);
+  `path_expand_r`/`path_home_r` dropped (no R-vs-libuv distinction in Python);
+  `path_select_components` + `path_package` deferred → parking lot.
 
 ## P2 — Typed scalars
 - [ ] `display.py`: `humanize_bytes`, `parse_bytes` (`"10MB"`, `"1.5GiB"`), `perms_to_str`,
@@ -104,6 +108,8 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
 - [ ] Smoke test: fluent copy/move/delete round-trip in a tmp dir + `dir_info().query(...)` demo
 
 ## Parking lot / later
+- `path_select_components` and `path_package` (R-isms; revisit demand for Python equivalents).
+- Check PyPI availability of the `pyfs` distribution name before P6 publish (import name stays `pyfs`).
 - Async variants (`aiofiles`-backed) — out of scope for v1.
 - Remote/cloud backends — explicit non-goal (use `fsspec`).
 - Rich/`textual` integration for `dir_tree` — nice-to-have.
