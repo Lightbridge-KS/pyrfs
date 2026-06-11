@@ -1,0 +1,74 @@
+[project]
+name = "pyfs"
+version = "0.1.0"
+description = "Pythonic filesystem ergonomics inspired by R's fs — tidy paths, typed values, chainable, pandas-friendly"
+readme = "README.md"
+authors = [
+    { name = "Lightbridge-KS", email = "ki11ip0.s.a.s@gmail.com" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = []
+keywords = ["filesystem", "path", "fs", "files"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: System :: Filesystems",
+    "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+pandas = ["pandas>=2.0"]
+
+[project.urls]
+Repository = "https://github.com/Lightbridge-KS/pyfs"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pyfs*"]
+
+[tool.setuptools.package-data]
+pyfs = ["py.typed"]
+
+[tool.ruff]
+line-length = 99
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "RUF", # ruff-specific
+]
+
+[tool.mypy]
+strict = true
+python_version = "3.10"
+files = ["pyfs"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
