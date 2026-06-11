@@ -29,6 +29,16 @@ class Bytes(int):
     True
     >>> str(Bytes("1MB") + "500KB")
     '1.49M'
+
+    Notes
+    -----
+    ``repr`` stays exact (``Bytes(455200)``); ``str``/``format`` humanize.
+    With the ``[pandas]`` extra, columns of these use the ``"bytes"``
+    ExtensionDtype, so the same comparisons work in ``DataFrame.query()``.
+
+    See Also
+    --------
+    pyrfs.file_size : Returns sizes as ``Bytes``.
     """
 
     __slots__ = ()
@@ -122,6 +132,16 @@ class Perms(int):
     True
     >>> str(Perms("644") | "u+x")
     'rwxr--r--'
+
+    Notes
+    -----
+    Symbolic strings here build from a base of ``0`` (so ``"u+rw"`` ==
+    ``"u=rw"``); `pyrfs.file_chmod` applies symbolic modes to the file's
+    *current* mode instead, like the ``chmod`` command.
+
+    See Also
+    --------
+    pyrfs.file_chmod : Apply permissions to files.
     """
 
     __slots__ = ()

@@ -68,5 +68,16 @@ class Vectorized(Generic[P, R]):
 
 
 def vectorized(func: Callable[Concatenate[str, P], R]) -> Vectorized[P, R]:
-    """Make a scalar path function polymorphic over collections and Series."""
+    """Make a scalar path function polymorphic over collections and Series.
+
+    Examples
+    --------
+    >>> @vectorized
+    ... def loud(path: str) -> str:
+    ...     return path.upper()
+    >>> loud("a/b")
+    'A/B'
+    >>> loud(["a", "b"])
+    ['A', 'B']
+    """
     return Vectorized(func)

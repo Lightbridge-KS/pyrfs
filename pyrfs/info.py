@@ -23,7 +23,13 @@ __all__ = ["dir_info", "file_info", "has_pandas"]
 
 @functools.cache
 def has_pandas() -> bool:
-    """Whether pandas is importable (cached; decides the ``*_info`` shape)."""
+    """Whether pandas is importable (cached; decides the ``*_info`` shape).
+
+    Examples
+    --------
+    >>> has_pandas() in (True, False)
+    True
+    """
     try:
         import pandas  # noqa: F401
     except ImportError:
@@ -37,7 +43,21 @@ def file_info(
     """Stat path(s) into a typed table.
 
     Returns a DataFrame with typed columns (``path``/``size``/``permissions``
-    as pyrfs dtypes) when pandas is installed, else ``list[dict]`` rows.
+    as pyrfs dtypes) when pandas is installed, else ``list[dict]`` rows of
+    the same typed scalars.
+
+    Parameters
+    ----------
+    path : str, os.PathLike, or iterable of them
+        Path(s) to stat.
+    follow : bool, optional
+        Stat symlink targets instead of the links themselves
+        (default ``False``).
+
+    See Also
+    --------
+    dir_info : Stat a directory's entries.
+    pyrfs.FsPath.info : One row, as a plain dict.
 
     Examples
     --------
@@ -60,6 +80,15 @@ def dir_info(
     fail: bool = True,
 ) -> pd.DataFrame | list[dict[str, object]]:
     """Stat directory entries into a typed table (same filters as ``dir_ls``).
+
+    Returns a DataFrame with typed columns when pandas is installed, else
+    ``list[dict]`` rows. This is the fs headline: with typed columns,
+    string literals work inside ``.query()``.
+
+    See Also
+    --------
+    file_info : Stat explicit path(s).
+    pyrfs.dir_ls : The underlying listing and its filter arguments.
 
     Examples
     --------

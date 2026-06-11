@@ -39,10 +39,36 @@ __all__ = [
 def dir_create(path: str, *, mode: int | str = 0o755, recurse: bool = True) -> FsPath:
     """Create a directory (parents too when `recurse`); existing dirs are fine.
 
+    Vectorized: also accepts an iterable or pandas Series of paths.
+
+    Parameters
+    ----------
+    path : str or os.PathLike
+        The directory to create.
+    mode : int or str, optional
+        Permissions for newly created directories (default ``0o755``);
+        subject to the process umask.
+    recurse : bool, optional
+        Create missing parents too (default ``True``, matching fs — note
+        this differs from the ``recurse=False`` default of the listing
+        functions).
+
+    Returns
+    -------
+    FsPath
+        The created path (chains).
+
+    See Also
+    --------
+    file_create : The file counterpart.
+    FsPath.mkdir : Fluent equivalent.
+
     Examples
     --------
-    >>> dir_create("out/plots")  # doctest: +SKIP
+    >>> dir_create("out/plots")
     FsPath('out/plots')
+    >>> dir_exists("out/plots")
+    True
     """
     p = FsPath(path)
     m = parse_perms(mode)
@@ -55,13 +81,42 @@ def dir_create(path: str, *, mode: int | str = 0o755, recurse: bool = True) -> F
 
 @vectorized
 def dir_exists(path: str) -> bool:
-    """Whether the path exists and is a directory (follows symlinks)."""
+    """Whether the path exists and is a directory (follows symlinks).
+
+    Vectorized: also accepts an iterable or pandas Series of paths.
+
+    See Also
+    --------
+    pyrfs.is_dir : Entry-itself (lstat) semantics — a symlink to a
+        directory answers ``False`` there but ``True`` here.
+    """
     return os.path.isdir(path)
 
 
 @vectorized
 def dir_delete(path: str) -> FsPath:
-    """Delete a directory and everything below it (recursive)."""
+    """Delete a directory and everything below it (recursive, like ``rm -rf``).
+
+    Vectorized: also accepts an iterable or pandas Series of paths.
+
+    Returns
+    -------
+    FsPath
+        The deleted path.
+
+    See Also
+    --------
+    file_delete : Single files and symlinks.
+    FsPath.rmdir : Fluent equivalent.
+
+    Examples
+    --------
+    >>> _ = dir_create("scratch/deep")
+    >>> dir_delete("scratch")
+    FsPath('scratch')
+    >>> dir_exists("scratch")
+    False
+    """
     p = FsPath(path)
     shutil.rmtree(p)
     return p
@@ -71,8 +126,44 @@ def dir_delete(path: str) -> FsPath:
 def dir_copy(path: str, new_path: PathInput, *, overwrite: bool = False) -> FsPath:
     """Copy a directory tree to `new_path` (a name, or an existing directory).
 
-    Same destination resolution and ``overwrite`` guard as ``file_copy``;
-    with ``overwrite=True`` an existing destination is replaced, not merged.
+    Same destination resolution and ``overwrite`` guard as `file_copy`:
+    copying into an existing directory targets ``new_path/basename`` (shell
+    ``cp -r`` semantics). With ``overwrite=True`` an existing destination is
+    *replaced*, not merged. Symlinks are copied as symlinks.
+
+    Parameters
+    ----------
+    path : str or os.PathLike
+        Source directory.
+    new_path : str or os.PathLike
+        Destination name, or an existing directory to copy into.
+    overwrite : bool, optional
+        Replace an existing (resolved) destination (default ``False``).
+
+    Returns
+    -------
+    FsPath
+        The root of the new copy.
+
+    Raises
+    ------
+    NotADirectoryError
+        If `path` is not a directory.
+    FileExistsError
+        If the (resolved) destination exists and `overwrite` is ``False``.
+
+    See Also
+    --------
+    file_copy : Single files.
+    file_move : Directories move via ``file_move`` (there is no dir_move).
+
+    Examples
+    --------
+    >>> _ = dir_create("src/sub")
+    >>> dir_copy("src", "backup")
+    FsPath('backup')
+    >>> dir_exists("backup/sub")
+    True
     """
     src = FsPath(path)
     if not os.path.isdir(src):
@@ -127,6 +218,26 @@ def dir_walk(
     ------
     FsPath
         Entry paths, prefixed by `path`, siblings sorted by name.
+
+    Raises
+    ------
+    FsValueError
+        If both `glob` and `regexp` are set, or `type` names an unknown
+        entry type.
+
+    See Also
+    --------
+    dir_ls : The eager (list-returning) form.
+    dir_map : Apply a function to each entry.
+
+    Examples
+    --------
+    >>> from pyrfs import file_touch
+    >>> _ = dir_create("logs")
+    >>> _ = file_touch("logs/a.log")
+    >>> walker = dir_walk("logs")  # nothing read yet — it's a generator
+    >>> next(walker)
+    FsPath('logs/a.log')
     """
     if glob is not None and regexp is not None:
         raise FsValueError("`glob` and `regexp` cannot both be set.")
@@ -156,12 +267,57 @@ def dir_ls(
     invert: bool = False,
     fail: bool = True,
 ) -> list[FsPath]:
-    """List directory entries (eager :func:`dir_walk`; same filters).
+    """List directory entries with the full fs filter set.
+
+    The eager form of `dir_walk` — same parameters, returns a sorted list.
+
+    Parameters
+    ----------
+    path : str or os.PathLike
+        Directory to list (default: the working directory).
+    all : bool, optional
+        Include hidden dotfiles.
+    recurse : bool or int, optional
+        ``True`` = full recursion, ``False`` = this level only, an int
+        limits depth (``1`` = one level below `path`).
+    type : str or iterable of str, optional
+        Keep only these entry types (``"file"``, ``"directory"``,
+        ``"symlink"``, ...); ``"any"`` keeps all.
+    glob, regexp : str, optional
+        Keep entries whose path matches (mutually exclusive).
+    invert : bool, optional
+        Keep entries that do *not* match `glob`/`regexp`.
+    fail : bool, optional
+        Raise on unreadable entries (``True``) or warn and skip (``False``).
+
+    Returns
+    -------
+    list of FsPath
+        Entry paths, prefixed by `path`, siblings sorted by name.
+
+    Raises
+    ------
+    FsValueError
+        If both `glob` and `regexp` are set, or `type` names an unknown
+        entry type.
+
+    See Also
+    --------
+    dir_walk : The lazy (generator) form.
+    dir_info : The same listing as typed stat rows / DataFrame.
+    pyrfs.path_filter : The same glob/regexp filter for in-memory lists.
 
     Examples
     --------
-    >>> dir_ls("pyrfs", recurse=True, glob="*.py")  # doctest: +SKIP
-    [FsPath('pyrfs/__init__.py'), ...]
+    >>> from pyrfs import file_touch
+    >>> _ = dir_create("proj/sub")
+    >>> _ = file_touch(["proj/a.py", "proj/b.txt"])
+    >>> dir_ls("proj")
+    [FsPath('proj/a.py'), FsPath('proj/b.txt'), FsPath('proj/sub')]
+    >>> dir_ls("proj", glob="*.py")
+    [FsPath('proj/a.py')]
+    >>> dir_ls("proj", type="directory")
+    [FsPath('proj/sub')]
     """
     return list(
         dir_walk(
@@ -189,7 +345,22 @@ def dir_map(
     invert: bool = False,
     fail: bool = True,
 ) -> list[object]:
-    """Apply `fn` to each entry (same filters as :func:`dir_walk`)."""
+    """Apply `fn` to each entry and collect the results.
+
+    Takes the same filter arguments as `dir_ls`.
+
+    See Also
+    --------
+    dir_walk : Iterate lazily instead of collecting.
+
+    Examples
+    --------
+    >>> from pyrfs import file_touch
+    >>> _ = dir_create("d")
+    >>> _ = file_touch(["d/a.py", "d/b.py"])
+    >>> dir_map("d", lambda p: p.ext())
+    ['py', 'py']
+    """
     return [
         fn(p)
         for p in dir_walk(
@@ -216,7 +387,17 @@ def dir_info(
     invert: bool = False,
     fail: bool = True,
 ) -> list[dict[str, object]]:
-    """Stat each entry into typed rows — ``file_info`` over ``dir_ls``."""
+    """Stat each entry into typed rows — `file_info` over `dir_ls`.
+
+    Takes the same filter arguments as `dir_ls`. This is the engine form,
+    always ``list[dict]``; the public `pyrfs.dir_info` upgrades the result
+    to a typed DataFrame when pandas is installed.
+
+    See Also
+    --------
+    pyrfs.dir_info : The public, DataFrame-returning surface.
+    file_info : The row schema.
+    """
     return file_info(
         dir_ls(
             path,
@@ -239,13 +420,19 @@ def dir_tree(
 ) -> None:
     """Print a box-drawing tree of the directory, like the Unix ``tree``.
 
+    Entries are coloured by type via ``LS_COLORS`` in a capable terminal
+    (plain on non-TTY or ``NO_COLOR``). Hidden files are skipped unless
+    ``all=True``; `recurse` limits depth as in `dir_ls`.
+
     Examples
     --------
-    >>> dir_tree("pyrfs")  # doctest: +SKIP
-    pyrfs
-    ├── __init__.py
-    └── _engine
-        └── paths.py
+    >>> from pyrfs import file_touch
+    >>> _ = dir_create("proj/src")
+    >>> _ = file_touch("proj/README.md")
+    >>> dir_tree("proj")
+    proj
+    ├── README.md
+    └── src
     """
     root = FsPath(path)
     lines = [colourise_path(root)]

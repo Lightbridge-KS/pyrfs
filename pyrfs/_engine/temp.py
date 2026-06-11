@@ -26,15 +26,33 @@ def file_temp(
     tmp_dir: PathInput | None = None,
     ext: str = "",
 ) -> FsPath:
-    """Return a unique temp path (name only — the file is not created).
+    """Return a unique temp path (a *name* only — the file is not created).
 
-    If names were queued with :func:`file_temp_push`, the oldest queued
-    name is returned instead (deterministic mode).
+    If names were queued with `file_temp_push`, the oldest queued name is
+    returned instead — deterministic mode, fs's trick for reproducible
+    examples, docs, and tests.
+
+    Parameters
+    ----------
+    pattern : str, optional
+        Filename prefix (default ``"file"``).
+    tmp_dir : str or os.PathLike, optional
+        Directory for the name (default: the session temp directory).
+    ext : str, optional
+        Extension, with or without the leading dot.
+
+    See Also
+    --------
+    file_temp_push, file_temp_pop : The deterministic-name queue.
+    pyrfs.path_temp : The temp *directory* itself.
 
     Examples
     --------
     >>> file_temp(ext="csv")  # doctest: +SKIP
     FsPath('/tmp/file2bf36b4eb5d8.csv')
+    >>> _ = file_temp_push("/tmp/demo.csv")
+    >>> file_temp()  # deterministic: returns the queued name
+    FsPath('/tmp/demo.csv')
     """
     if _TEMP_STACK:
         return _TEMP_STACK.pop(0)
@@ -44,7 +62,20 @@ def file_temp(
 
 
 def file_temp_push(path: PathInput | Iterable[PathInput]) -> list[FsPath]:
-    """Queue deterministic path(s) for subsequent :func:`file_temp` calls."""
+    """Queue deterministic path(s) for subsequent `file_temp` calls.
+
+    Returns
+    -------
+    list of FsPath
+        The queued paths (FIFO order).
+
+    Examples
+    --------
+    >>> file_temp_push(["/tmp/one", "/tmp/two"])
+    [FsPath('/tmp/one'), FsPath('/tmp/two')]
+    >>> file_temp(), file_temp()
+    (FsPath('/tmp/one'), FsPath('/tmp/two'))
+    """
     if isinstance(path, (str, os.PathLike)):
         items: list[FsPath] = [FsPath(path)]
     else:
@@ -54,7 +85,16 @@ def file_temp_push(path: PathInput | Iterable[PathInput]) -> list[FsPath]:
 
 
 def file_temp_pop() -> FsPath | None:
-    """Remove and return the oldest queued temp path (``None`` if empty)."""
+    """Remove and return the oldest queued temp path (``None`` if empty).
+
+    Examples
+    --------
+    >>> _ = file_temp_push("/tmp/queued")
+    >>> file_temp_pop()
+    FsPath('/tmp/queued')
+    >>> file_temp_pop() is None
+    True
+    """
     if _TEMP_STACK:
         return _TEMP_STACK.pop(0)
     return None

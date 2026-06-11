@@ -160,13 +160,13 @@ print(big.to_string(index=False))
 ```
 
                         path permissions  size
-     pyrfs/_engine/dirops.py   rw-r--r--  9.2K
-             pyrfs/fspath.py   rw-r--r-- 8.09K
-      pyrfs/_engine/paths.py   rw-r--r-- 8.04K
-    pyrfs/_engine/fileops.py   rw-r--r-- 7.53K
+     pyrfs/_engine/dirops.py   rw-r--r-- 14.3K
+      pyrfs/_engine/paths.py   rw-r--r-- 13.5K
+    pyrfs/_engine/fileops.py   rw-r--r-- 12.9K
+             pyrfs/fspath.py   rw-r--r-- 10.9K
      pyrfs/_pandas/arrays.py   rw-r--r-- 7.26K
             pyrfs/display.py   rw-r--r-- 7.22K
-             pyrfs/values.py   rw-r--r-- 6.11K
+             pyrfs/values.py   rw-r--r-- 6.71K
 
 The `.fs` accessor vectorizes path operations over a Series:
 
@@ -175,9 +175,9 @@ paths = pd.Series(fs.dir_ls("pyrfs/_engine", glob="*ops.py"))
 print(paths.fs.size())
 ```
 
-    0     9.2K
-    1    7.53K
-    2    2.03K
+    0    14.3K
+    1    12.9K
+    2     3.7K
     dtype: bytes
 
 And reading a collection of files into one frame — the
