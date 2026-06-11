@@ -6,6 +6,10 @@ Pythonic port of R's [`fs`](https://fs.r-lib.org) UX: tidy paths, typed values
 **Design docs (read before structural changes):** `docs/design/pyrfs-ux.md` (API feel),
 `docs/design/pyrfs-architecture.md` (structure).
 
+**README is generated:** never edit `README.md` directly — edit `README.qmd`, then render
+with `uv run --group docs --extra pandas quarto render README.qmd` (Quarto executes the
+code cells; temp paths are kept deterministic via `file_temp_push`). Commit both files.
+
 **Docs site:** MkDocs Material (`mkdocs.yml`; content in `docs/`), deployed on Netlify
 (https://pyrfs.netlify.app). Build locally with
 `uv run --group docs --extra pandas mkdocs build --strict` — the tour notebook executes
