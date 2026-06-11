@@ -226,4 +226,5 @@ issues](https://github.com/Lightbridge-KS/pyrfs/issues).
 
 ## License
 
-MIT
+MIT © Lightbridge-KS — see [LICENSE.md](LICENSE.md). Release history:
+[CHANGELOG.md](CHANGELOG.md).

@@ -81,6 +81,8 @@ plugins:
         Design notes:
           - design/pyrfs-ux.md: UX design document
           - design/pyrfs-architecture.md: Architecture document
+        Project:
+          - changelog.md: Release history
 
 nav:
   - Home: index.md
@@ -102,3 +104,4 @@ nav:
   - Design:
       - UX design: design/pyrfs-ux.md
       - Architecture: design/pyrfs-architecture.md
+  - Changelog: changelog.md
