@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+from collections.abc import Iterable, Iterator
 
 from pyfs.display import tidy
 from pyfs.values import Bytes
@@ -133,6 +134,83 @@ class FsPath(str):
         """Stat this path into a row of typed values."""
         return _fileops.file_info(self)[0]
 
+    # -- directory verbs (I/O) ---------------------------------------------
+    def mkdir(self, *, mode: int | str = 0o755, recurse: bool = True) -> FsPath:
+        """Create this directory (parents too when `recurse`); chains."""
+        return _dirops.dir_create(self, mode=mode, recurse=recurse)
+
+    def rmdir(self) -> None:
+        """Delete this directory and everything below it (recursive)."""
+        _dirops.dir_delete(self)
+
+    def touch_file(self, name: str | os.PathLike[str]) -> FsPath:
+        """Create a child file and return *this directory* (keeps chaining)."""
+        _fileops.file_touch(self / name)
+        return self
+
+    def ls(
+        self,
+        *,
+        all: bool = False,
+        recurse: bool | int = False,
+        type: str | Iterable[str] = "any",
+        glob: str | None = None,
+        regexp: str | None = None,
+        invert: bool = False,
+        fail: bool = True,
+    ) -> list[FsPath]:
+        """List entries of this directory (same filters as ``dir_ls``)."""
+        return _dirops.dir_ls(
+            self,
+            all=all,
+            recurse=recurse,
+            type=type,
+            glob=glob,
+            regexp=regexp,
+            invert=invert,
+            fail=fail,
+        )
+
+    def walk(
+        self,
+        *,
+        all: bool = False,
+        recurse: bool | int = True,
+        type: str | Iterable[str] = "any",
+        glob: str | None = None,
+        regexp: str | None = None,
+        invert: bool = False,
+        fail: bool = True,
+    ) -> Iterator[FsPath]:
+        """Lazily yield entries below this directory (recursive by default)."""
+        return _dirops.dir_walk(
+            self,
+            all=all,
+            recurse=recurse,
+            type=type,
+            glob=glob,
+            regexp=regexp,
+            invert=invert,
+            fail=fail,
+        )
+
+    def tree(self, *, recurse: bool | int = True, all: bool = False) -> None:
+        """Print a box-drawing tree of this directory."""
+        _dirops.dir_tree(self, recurse=recurse, all=all)
+
+    # -- type predicates ----------------------------------------------------
+    def is_file(self) -> bool:
+        """Whether this path is a regular file (symlinks answer ``False``)."""
+        return _predicates.is_file(self)
+
+    def is_dir(self) -> bool:
+        """Whether this path is a directory (symlinks answer ``False``)."""
+        return _predicates.is_dir(self)
+
+    def is_link(self) -> bool:
+        """Whether this path is a symlink."""
+        return _predicates.is_link(self)
+
     # -- interop ----------------------------------------------------------
     def as_pathlib(self) -> pathlib.Path:
         """This path as a ``pathlib.Path`` (for pathlib semantics)."""
@@ -141,5 +219,7 @@ class FsPath(str):
 
 # Imported at the bottom to break the FsPath <-> engine import cycle:
 # the engine returns FsPath; FsPath methods delegate to the engine.
+from pyfs._engine import dirops as _dirops  # noqa: E402
 from pyfs._engine import fileops as _fileops  # noqa: E402
 from pyfs._engine import paths as _paths  # noqa: E402
+from pyfs._engine import predicates as _predicates  # noqa: E402

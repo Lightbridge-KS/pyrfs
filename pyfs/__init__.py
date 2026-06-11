@@ -4,6 +4,17 @@ Tidy paths, typed self-describing values, chainable operations, and
 optional pandas integration. See https://github.com/Lightbridge-KS/pyfs.
 """
 
+from pyfs._engine.dirops import (
+    dir_copy,
+    dir_create,
+    dir_delete,
+    dir_exists,
+    dir_info,
+    dir_ls,
+    dir_map,
+    dir_tree,
+    dir_walk,
+)
 from pyfs._engine.fileops import (
     file_access,
     file_chmod,
@@ -17,6 +28,14 @@ from pyfs._engine.fileops import (
     file_show,
     file_size,
     file_touch,
+)
+from pyfs._engine.ids import group_ids, user_ids
+from pyfs._engine.linkops import (
+    link_copy,
+    link_create,
+    link_delete,
+    link_exists,
+    link_path,
 )
 from pyfs._engine.paths import (
     path,
@@ -41,6 +60,14 @@ from pyfs._engine.paths import (
     path_tidy,
     path_wd,
 )
+from pyfs._engine.predicates import (
+    is_absolute_path,
+    is_dir,
+    is_dir_empty,
+    is_file,
+    is_file_empty,
+    is_link,
+)
 from pyfs._engine.temp import file_temp, file_temp_pop, file_temp_push
 from pyfs.errors import FsError, FsValueError
 from pyfs.fspath import FsPath
@@ -55,6 +82,15 @@ __all__ = [
     "FsValueError",
     "Perms",
     "__version__",
+    "dir_copy",
+    "dir_create",
+    "dir_delete",
+    "dir_exists",
+    "dir_info",
+    "dir_ls",
+    "dir_map",
+    "dir_tree",
+    "dir_walk",
     "file_access",
     "file_chmod",
     "file_chown",
@@ -70,6 +106,18 @@ __all__ = [
     "file_temp_pop",
     "file_temp_push",
     "file_touch",
+    "group_ids",
+    "is_absolute_path",
+    "is_dir",
+    "is_dir_empty",
+    "is_file",
+    "is_file_empty",
+    "is_link",
+    "link_copy",
+    "link_create",
+    "link_delete",
+    "link_exists",
+    "link_path",
     "path",
     "path_abs",
     "path_common",
@@ -91,4 +139,5 @@ __all__ = [
     "path_temp",
     "path_tidy",
     "path_wd",
+    "user_ids",
 ]

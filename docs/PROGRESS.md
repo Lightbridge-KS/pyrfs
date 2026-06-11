@@ -11,7 +11,7 @@
 | P1 | Path algebra + `FsPath` | `[x]` |
 | P2 | Typed scalars (`Bytes`, `Perms`) | `[x]` |
 | P3 | File ops + errors + temp | `[x]` |
-| P4 | Dir + link + ids | `[ ]` |
+| P4 | Dir + link + ids | `[x]` |
 | P5 | pandas layer | `[ ]` |
 | P6 | Display, docs, packaging | `[ ]` |
 
@@ -75,16 +75,20 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
   `file_chmod` applies symbolic modes relative to the current mode (chmod semantics).
 
 ## P4 — Dir + link + ids
-- [ ] `_engine/dirops.py`: `dir_create` (`recurse=True`), `dir_copy`, `dir_delete`, `dir_exists`,
+- [x] `_engine/dirops.py`: `dir_create` (`recurse=True`), `dir_copy`, `dir_delete`, `dir_exists`,
       `dir_ls` (filters: `all`, `recurse:int|bool`, `type`, `glob`/`regexp`, `invert`, `fail`),
-      `dir_map`, `dir_walk`, `dir_tree` (box-drawing)
-- [ ] `_engine/linkops.py`: `link_create` (`symbolic=True`), `link_copy`, `link_delete`,
+      `dir_map`, `dir_walk` (lazy generator — the Pythonic walker), `dir_tree` (box-drawing)
+- [x] `_engine/linkops.py`: `link_create` (`symbolic=True`), `link_copy`, `link_delete`,
       `link_exists`, `link_path`
-- [ ] `_engine/ids.py`: `user_ids`, `group_ids` (POSIX via `pwd`/`grp`; empty on Windows)
-- [ ] predicates: `is_file`, `is_dir`, `is_link`, `is_file_empty`, `is_dir_empty`, `is_absolute_path`
-- [ ] `FsPath`: `ls`, `walk`, `tree`, `mkdir`, `rmdir`
-- [ ] Tests: recursion depth, type/glob filters, `fail=False` warning path, symlink round-trip
-- **Gate:** directory traversal + filtering + links match `fs` semantics.
+- [x] `_engine/ids.py`: `user_ids`, `group_ids` (POSIX via `pwd`/`grp`; empty on Windows)
+- [x] `_engine/predicates.py`: `is_file`, `is_dir`, `is_link` (lstat semantics — a symlink is
+      only `is_link`, matching fs), `is_file_empty`, `is_dir_empty`, `is_absolute_path`
+- [x] `FsPath`: `ls`, `walk`, `tree`, `mkdir`, `rmdir`, `touch_file`, `is_file/is_dir/is_link`
+- [x] Tests: recursion depth, type/glob filters, `fail=False` warning path, symlink round-trip
+- **Gate:** directory traversal + filtering + links match `fs` semantics. ✅
+- Notes: `dir_copy` resolves into an existing destination dir then guards the resolved target
+  (cp/fs semantics — repeat copy nests); `dir_tree` prints (test via capsys), colour in P6;
+  suite verified both without pandas (240 + 1 skip) and with `--extra pandas` (241).
 
 ## P5 — pandas layer (optional extra)
 - [ ] `_pandas/dtypes.py` + `arrays.py`: `BytesDtype/Array`, `PermsDtype/Array`, `PathDtype/Array`
