@@ -12,7 +12,7 @@
 | P2 | Typed scalars (`Bytes`, `Perms`) | `[x]` |
 | P3 | File ops + errors + temp | `[x]` |
 | P4 | Dir + link + ids | `[x]` |
-| P5 | pandas layer | `[ ]` |
+| P5 | pandas layer | `[x]` |
 | P6 | Display, docs, packaging | `[ ]` |
 
 Guiding rules: tight feedback loops (test after each change); `mypy --strict` clean, no `Any`;
@@ -91,15 +91,23 @@ NumPy-style docstrings on public API; public methods before private; `_engine` n
   suite verified both without pandas (240 + 1 skip) and with `--extra pandas` (241).
 
 ## P5 — pandas layer (optional extra)
-- [ ] `_pandas/dtypes.py` + `arrays.py`: `BytesDtype/Array`, `PermsDtype/Array`, `PathDtype/Array`
-      (`_from_sequence`, `__getitem__`, `__len__`, `isna`, `take`, `copy`, `_concat_same_type`,
-      `ExtensionScalarOpsMixin`, `@register_extension_dtype`); reuse `display.py`/`values.py`
-- [ ] `_pandas/frames.py`: build `file_info`/`dir_info` DataFrames with typed columns
-- [ ] `_pandas/accessor.py`: `@register_series_accessor("fs")` → `ext/dir/name/abs/exists/is_dir/with_ext`
-- [ ] `__init__.py`: lazy `try: import pyfs._pandas`; `has_pandas()`; `*_info` → DataFrame else `list[dict]`
-- [ ] Tests guarded by `importorskip("pandas")`; verify `dir_info().query("size > '10KB'")`,
-      accessor ops, reductions; run suite **with and without** the extra
-- **Gate:** headline demo works; core suite passes when pandas absent.
+- [x] `_pandas/dtypes.py` + `arrays.py`: `BytesDtype/Array`, `PermsDtype/Array`, `PathDtype/Array`
+      (shared `_FsArray` base implements the protocol; `ExtensionScalarOpsMixin` lifts the
+      *scalar* operator semantics elementwise — `size > "10KB"` works because `Bytes` does)
+- [x] `_pandas/frames.py`: typed `*_info` DataFrames (path/bytes/perms dtypes, datetime cols)
+- [x] `_pandas/accessor.py`: `Series.fs` → ext/with_ext/ext_remove/dir/name/norm/expand/abs/
+      real/rel_to/has_parent/exists/is_file/is_dir/is_link/size
+- [x] `pyfs/info.py`: public `file_info`/`dir_info` + cached `has_pandas()`; engine stays
+      `list[dict]`; `__init__` registers the layer via `contextlib.suppress(ImportError)`
+- [x] Tests: dtype construction/comparisons/reductions/sorting, accessor ops, headline
+      `query("size > '1KB'")` demo, empty-frame schema; suite green **with** the extra
+      (266) and core-only (242)
+- **Gate:** headline demo works; core suite passes when pandas absent. ✅
+- Notes: arrays are float64-backed (NaN = NA, like fs's numeric `fs_bytes`); dtype names are
+  `"bytes"`/`"perms"`/`"path"` (registry wins over numpy for `astype("bytes")`); mypy treats
+  pandas/numpy as opaque (`follow_imports = "skip"`) so `--strict` is deterministic with or
+  without the extra — core stays fully strict, `pyfs._pandas.*` has narrow relaxations;
+  groupby reductions on typed columns beyond min/max/sum → parking lot.
 
 ## P6 — Display, docs, packaging
 - [ ] `display.py`: `LS_COLORS` colouriser for `FsPath.__repr__`; degrade on non-TTY/`NO_COLOR`

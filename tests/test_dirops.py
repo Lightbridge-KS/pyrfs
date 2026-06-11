@@ -126,7 +126,10 @@ class TestWalkMapInfo:
         assert out == ["a.py"]
 
     def test_info_rows(self, base: FsPath) -> None:
-        rows = fs.dir_info(base, recurse=True, type="file")
+        # engine rows; the public fs.dir_info upgrades to a DataFrame with pandas
+        from pyfs._engine.dirops import dir_info as engine_dir_info
+
+        rows = engine_dir_info(base, recurse=True, type="file")
         assert all(r["type"] == "file" for r in rows)
         assert any(str(r["path"]).endswith("d.md") for r in rows)
 

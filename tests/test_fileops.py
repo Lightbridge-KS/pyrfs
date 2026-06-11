@@ -141,8 +141,11 @@ class TestQueries:
         assert stat.S_IMODE(os.stat(p).st_mode) == 0o700
 
     def test_info_row_types(self, base: FsPath) -> None:
+        # engine rows; the public fs.file_info upgrades to a DataFrame with pandas
+        from pyfs._engine.fileops import file_info as engine_file_info
+
         p = fs.file_create(base / "a.txt")
-        rows = fs.file_info(p)
+        rows = engine_file_info(p)
         assert len(rows) == 1
         row = rows[0]
         assert row["path"] == p
@@ -151,8 +154,10 @@ class TestQueries:
         assert isinstance(row["permissions"], Perms)
 
     def test_info_many(self, base: FsPath) -> None:
+        from pyfs._engine.fileops import file_info as engine_file_info
+
         ps = fs.file_create([base / "x", base / "y"])
-        rows = fs.file_info(ps)
+        rows = engine_file_info(ps)
         assert [r["path"] for r in rows] == ps
 
 

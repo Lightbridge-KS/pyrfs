@@ -4,12 +4,13 @@ Tidy paths, typed self-describing values, chainable operations, and
 optional pandas integration. See https://github.com/Lightbridge-KS/pyfs.
 """
 
+import contextlib
+
 from pyfs._engine.dirops import (
     dir_copy,
     dir_create,
     dir_delete,
     dir_exists,
-    dir_info,
     dir_ls,
     dir_map,
     dir_tree,
@@ -23,7 +24,6 @@ from pyfs._engine.fileops import (
     file_create,
     file_delete,
     file_exists,
-    file_info,
     file_move,
     file_show,
     file_size,
@@ -71,6 +71,7 @@ from pyfs._engine.predicates import (
 from pyfs._engine.temp import file_temp, file_temp_pop, file_temp_push
 from pyfs.errors import FsError, FsValueError
 from pyfs.fspath import FsPath
+from pyfs.info import dir_info, file_info, has_pandas
 from pyfs.values import Bytes, Perms
 
 __version__ = "0.1.0"
@@ -107,6 +108,7 @@ __all__ = [
     "file_temp_push",
     "file_touch",
     "group_ids",
+    "has_pandas",
     "is_absolute_path",
     "is_dir",
     "is_dir_empty",
@@ -141,3 +143,8 @@ __all__ = [
     "path_wd",
     "user_ids",
 ]
+
+# Optional pandas layer: importing it registers the dtypes and the Series.fs
+# accessor; without pandas installed the core works unchanged.
+with contextlib.suppress(ImportError):
+    import pyfs._pandas  # noqa: F401

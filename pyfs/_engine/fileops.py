@@ -44,6 +44,22 @@ _ACCESS_MODES = {
     "execute": os.X_OK,
 }
 
+# the row schema produced by file_info/_info_one (order matters for frames)
+INFO_COLUMNS = (
+    "path",
+    "type",
+    "size",
+    "permissions",
+    "modification_time",
+    "user",
+    "group",
+    "access_time",
+    "change_time",
+    "birth_time",
+    "inode",
+    "hard_links",
+)
+
 
 @vectorized
 def file_create(path: str, *, mode: int | str = 0o644) -> FsPath:
