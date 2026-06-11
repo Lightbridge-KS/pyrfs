@@ -238,6 +238,8 @@ def _resolve_target(path: str, new_path: PathInput) -> FsPath:
 
 def _info_one(p: FsPath, *, follow: bool) -> dict[str, object]:
     st = os.stat(p) if follow else os.lstat(p)
+    # macOS/BSD only; Linux/Windows stat has no birth time
+    birth_time: float | None = getattr(st, "st_birthtime", None)
     return {
         "path": p,
         "type": type_from_mode(st.st_mode),
@@ -248,7 +250,7 @@ def _info_one(p: FsPath, *, follow: bool) -> dict[str, object]:
         "group": _group_name(st.st_gid),
         "access_time": _ts(st.st_atime),
         "change_time": _ts(st.st_ctime),
-        "birth_time": _ts(st.st_birthtime) if hasattr(st, "st_birthtime") else None,
+        "birth_time": _ts(birth_time) if birth_time is not None else None,
         "inode": st.st_ino,
         "hard_links": st.st_nlink,
     }
